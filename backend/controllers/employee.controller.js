@@ -108,7 +108,7 @@ async function updateEmployee(req, res, next) {
 
 async function deleteEmployee(req, res, next) {
   try {
-    const { id } = req.params;
+    const {id} = req.params;
 
     // Ensure the ID is valid
     if (!id) {
