@@ -8,8 +8,10 @@ const authMiddleware = require("../middlewares/auth.middleware");
 router.post("/api/order", orderController.addOrder);
 
 // Route to get all orders
-// router.get("/api/orders",  orderController.getAllOrders);
-// // Route to get a specific order by ID
-// router.get("/api/order/:id",  orderController.getOrderById);
-// // Route to update an order
-// router.patch("/api/order/update", orderController.updateOrder);
+router.get("/api/orders",  orderController.getAllOrders);
+// Route to get a specific order by ID
+router.get("/api/order/:id",  orderController.getOrderById);
+// Route to update an order
+router.patch("/api/order/:id", orderController.updateOrder);
+
+module.exports = router;
