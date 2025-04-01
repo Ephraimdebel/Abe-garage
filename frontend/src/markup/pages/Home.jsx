@@ -1,10 +1,41 @@
 import React from 'react';
+import About from "../components/about/About"
+import Service from '../components/services/Service';
+import WhyChooseUs from '../components/whychooseus/WhyChooseUs';
+import BottomBanner from '../components/BottomBanner/BottomBanner';
+import Features from '../components/features/Features';
+import Schedule from '../components/features/Schedule';
+import banner1 from "../../assets/images/custom/banner/banner1.jpg"
+import Banner from '../components/Banner/Banner';
 
-function Home(props) {
+
+function Home() {
   return (
-    <div>
-      <h1>Home</h1>
-    </div>
+      <div>
+
+<div className="page-wrapper">
+
+   <Banner />
+
+   <About />
+
+   <Service />
+
+  <Features />
+<WhyChooseUs />
+
+<BottomBanner />
+
+
+<Schedule />
+
+ 
+
+</div>
+
+
+
+</div>
   );
 }
 
