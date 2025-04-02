@@ -19,6 +19,7 @@ async function createEmployee(employee) {
   try {
     // Generate a salt and hash the password 
     const salt = await bcrypt.genSalt(10);
+    // console.log("password - >", employee.employee_password);
     // Hash the password 
     const hashedPassword = await bcrypt.hash(employee.employee_password, salt);
     // Insert the email in to the employee table  
@@ -28,6 +29,7 @@ async function createEmployee(employee) {
     if (rows.affectedRows !== 1) {
       return false;
     }
+
     // Get the employee id from the insert 
     const employee_id = rows.insertId;
     // Insert the remaining data in to the employee_info, employee_pass, and employee_role tables  

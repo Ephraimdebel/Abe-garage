@@ -9,6 +9,7 @@ async function logIn(employeeData) {
   try {
     let returnData = {}; // Object to be returned
     const employee = await employeeService.getEmployeeByEmail(employeeData.employee_email);
+    // console.log("is employee - >", employee);
     if (employee.length === 0) {
       returnData = {
         status: "fail",
@@ -16,7 +17,9 @@ async function logIn(employeeData) {
       };
       return returnData;
     }
+
     const passwordMatch = await bcrypt.compare(employeeData.employee_password, employee[0].employee_password_hashed);
+    // console.log("is password match - >", passwordMatch);
     if (!passwordMatch) {
       returnData = {
         status: "fail",

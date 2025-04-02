@@ -1,41 +1,31 @@
-import React from 'react';
-import About from "../components/about/About"
-import Service from '../components/services/Service';
-import WhyChooseUs from '../components/whychooseus/WhyChooseUs';
-import BottomBanner from '../components/BottomBanner/BottomBanner';
-import Features from '../components/features/Features';
-import Schedule from '../components/features/Schedule';
-import banner1 from "../../assets/images/custom/banner/banner1.jpg"
-import Banner from '../components/Banner/Banner';
-
+import React from "react";
+import About from "../components/about/About";
+import Service from "../components/services/Service";
+import WhyChooseUs from "../components/whychooseus/WhyChooseUs";
+import BottomBanner from "../components/BottomBanner/BottomBanner";
+import Features from "../components/features/Features";
+import Schedule from "../components/features/Schedule";
+import Banner from "../components/Banner/Banner";
 
 function Home() {
   return (
-      <div>
+    <div>
+      <div className="page-wrapper">
+        <Banner />
 
-<div className="page-wrapper">
+        <About />
 
-   <Banner />
+        <Service />
 
-   <About />
+        <Features />
+        
+        <WhyChooseUs />
 
-   <Service />
+        <BottomBanner />
 
-  <Features />
-<WhyChooseUs />
-
-<BottomBanner />
-
-
-<Schedule />
-
- 
-
-</div>
-
-
-
-</div>
+        <Schedule />
+      </div>
+    </div>
   );
 }
 

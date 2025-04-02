@@ -34,7 +34,7 @@ function Header(props) {
               </div>
               <div className="right-column">
                 {isLogged ? (
-                  <div className="link-btn">
+                  <div className="link-btn pr-5">
                     <div className="phone-number"><strong>Welcome {employee?.employee_first_name}</strong></div>
                   </div>
                 ) : (
@@ -62,7 +62,7 @@ function Header(props) {
                         </li>
                         <li className="dropdown"><a href="/about">About Us</a>
                         </li>
-                        <li className="dropdown"><a href="/services">Services</a>
+                        <li className="dropdown"><a href="/service">Services</a>
                         </li>
                         <li><a href="/contact">Contact Us</a></li>
                       </ul>

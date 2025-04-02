@@ -29,7 +29,7 @@ function About() {
                                    Nanotechnology immersion along the information highway will close the loop on
                                    focusing.</p>
                            </div>
-                           <div className="link-btn mt-40"><a href="about.html"
+                           <div className="link-btn mt-40"><a href="about"
                                    className="theme-btn btn-style-one style-two"><span>About Us <i
                                            className="flaticon-right"></i></span></a></div>
                        </div>

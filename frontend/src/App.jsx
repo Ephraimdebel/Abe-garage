@@ -29,6 +29,9 @@ import Footer from './markup/components/Footer/Footer';
 
 // Import the PrivateAuthRoute component 
 import PrivateAuthRoute from './markup/components/Auth/PrivateAuthRoute';
+import Services from './markup/pages/Services';
+import AboutPage from './markup/pages/AboutPage';
+import Contact from './markup/pages/Contact';
 
 
 function App() {
@@ -39,6 +42,10 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path='/service' element = {<Services />} />
+        <Route path='/about' element = {<AboutPage />} />
+        <Route path='/contact' element = {<Contact />} />
+
         {/* // Add the Orders Route  */}
         <Route path="/admin/orders"
           element={

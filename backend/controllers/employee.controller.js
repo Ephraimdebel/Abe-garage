@@ -18,15 +18,28 @@ async function createEmployee(req, res, next) {
       const employeeData = req.body;
       // Create the employee
       const employee = await employeeService.createEmployee(employeeData);
-      if (!employee) {
-        res.status(400).json({
-          error: "Failed to add the employee!"
-        });
-      } else {
-        res.status(200).json({
-          status: "true",
-        });
-      }
+      // if (!employee) {
+      //   res.status(400).json({
+      //     error: "Failed to add the employee!"
+      //   });
+      // } else {
+      //   res.status(200).json({
+      //     status: "true",
+      //   });
+      // }
+      // console.log("what comes from employee - >",employee);
+      return res.status(200).json({
+        status: "true",
+        employee_id: employee.employee_id,
+        employee_email: employeeData.employee_email,
+        employee_first_name: employeeData.employee_first_name,
+        employee_last_name: employeeData.employee_last_name,  
+        employee_phone: employeeData.employee_phone,
+        employee_role: employeeData.company_role_id,
+        employee_password: employeeData.employee_password,
+        employee_active: employeeData.active_employee
+      });
+      
     } catch (error) {
       console.log(err);
       res.status(400).json({

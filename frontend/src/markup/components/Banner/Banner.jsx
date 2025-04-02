@@ -5,8 +5,7 @@ function Banner() {
   return (
     <section className="video-section">
         <div data-parallax='{"y": 50}' className="sec-bg"
-           style={{ backgroundImage: `url(${banner1})` }}
-           banner1        >
+           style={{ backgroundImage: `url(${banner1})` }} >
                 
             </div>
         <div className="auto-container">
