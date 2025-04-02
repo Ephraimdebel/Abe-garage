@@ -32,6 +32,8 @@ import PrivateAuthRoute from './markup/components/Auth/PrivateAuthRoute';
 import Services from './markup/pages/Services';
 import AboutPage from './markup/pages/AboutPage';
 import Contact from './markup/pages/Contact';
+import AdminPage from './markup/pages/admin/AdminPage';
+import AddNewCustomerPage from './markup/pages/admin/AddNewCustomer';
 
 
 function App() {
@@ -45,6 +47,9 @@ function App() {
         <Route path='/service' element = {<Services />} />
         <Route path='/about' element = {<AboutPage />} />
         <Route path='/contact' element = {<Contact />} />
+        <Route path='/admin' element = {<AdminPage />} />
+        <Route path='/admin/add-customer' element = {<AddNewCustomerPage />} />
+
 
         {/* // Add the Orders Route  */}
         <Route path="/admin/orders"
