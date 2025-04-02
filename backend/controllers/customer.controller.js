@@ -30,7 +30,7 @@ async function getCustomers(req, res) {
   try {
     const customers = await customerService.getCustomers();
 
-    return res.status(200).json({ customers });
+    return res.status(200).json({ customers : customers});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Failed to fetch customers" });

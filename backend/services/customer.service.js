@@ -64,7 +64,7 @@ async function getCustomers() {
       `;
       
       // Passing the limit correctly as the parameter
-      const [rows] = await conn.query(query);
+      const rows = await conn.query(query);
   
       return rows;
     } catch (error) {

@@ -34,6 +34,10 @@ import AboutPage from './markup/pages/AboutPage';
 import Contact from './markup/pages/Contact';
 import AdminPage from './markup/pages/admin/AdminPage';
 import AddNewCustomerPage from './markup/pages/admin/AddNewCustomer';
+import EditCustomer from './markup/pages/admin/EditCustomer';
+import EmployeeUpdatePage from './markup/pages/admin/EmployeeUpdatePage';
+import AddVehiclePage from './markup/pages/admin/AddVehiclePage';
+import Vehicle from './markup/components/Admin/Vehicles/Vehicle';
 
 
 function App() {
@@ -48,9 +52,12 @@ function App() {
         <Route path='/about' element = {<AboutPage />} />
         <Route path='/contact' element = {<Contact />} />
         <Route path='/admin' element = {<AdminPage />} />
+        <Route path='/admin/vehicle' element = {<Vehicle />} />
+
         <Route path='/admin/add-customer' element = {<AddNewCustomerPage />} />
+        <Route path='/admin/customer/edit' element = {<EditCustomer />} />
 
-
+        <Route path='/admin/customers/:id' element = {<AddVehiclePage />} />
         {/* // Add the Orders Route  */}
         <Route path="/admin/orders"
           element={
@@ -67,6 +74,7 @@ function App() {
           } />
         {/* // Add the Employees Route  */}
         <Route path="/admin/employees" element={<Employees />} />
+        <Route path="/admin/employee/edit" element={<EmployeeUpdatePage />} />
         <Route path="/admin/add-employee"
           element={
             // <PrivateAuthRoute roles={[3]}>

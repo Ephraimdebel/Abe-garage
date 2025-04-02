@@ -101,7 +101,7 @@ WHERE v.vehicle_id = ?;
             WHERE v.customer_id = ?;
         `;
 
-        const [vehicles] = await conn.query(query, [customerId]);
+        const vehicles = await conn.query(query, [customerId]);
 
         return vehicles;
     } catch (error) {

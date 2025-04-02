@@ -1,12 +1,11 @@
 import React from 'react';
-// Import the AddEmployeeForm component 
-import AddEmployeeForm from '../../components/Admin/AddEmployeeForm/AddEmployeeForm';
 // Import the AdminMenu component 
 import AdminMenu from '../../components/Admin/AdminMenu/AdminMenu';
-import Admin from '../../components/Admin/Admin/Admin';
-import CustomerList from '../../components/Admin/CustomerList/CustomerList';
+import UpdateCustomer from '../../components/Admin/UpdateCustomer/UpdateCustomer';
+import { useParams } from 'react-router';
 
-const Customers = () => {
+const EditCustomer = () => {
+  const { id } = useParams();
   return (
     <div>
     <div className="container-fluid admin-pages">
@@ -15,7 +14,7 @@ const Customers = () => {
           <AdminMenu />
         </div>
         <div className="col-md-9 admin-right-side">
-          <CustomerList />
+          <UpdateCustomer id={id} />
         </div>
       </div>
     </div>
@@ -23,4 +22,4 @@ const Customers = () => {
   )
 }
 
-export default Customers
+export default EditCustomer

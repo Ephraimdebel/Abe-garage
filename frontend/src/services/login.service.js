@@ -21,7 +21,9 @@ export const logOut = () => {
 
 
 // Export the functions 
-// module.exports = {
-//   logIn,
-//   logOut
-// }
+// export default loginService;
+const loginService = {
+  logIn,
+  logOut
+}
+export default loginService;

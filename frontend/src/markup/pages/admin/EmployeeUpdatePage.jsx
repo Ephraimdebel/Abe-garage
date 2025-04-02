@@ -5,9 +5,9 @@ import { useAuth } from "../../../Contexts/AuthContext";
 import LoginForm from '../../components/LoginForm/LoginForm';
 // Import the admin menu component
 import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
+import EmployeeUpdate from "../../components/Admin/EmployeeUpdate/EmployeeUpdate";
 // Import the EmployeesList component 
-import EmployeesList from "../../components/Admin/EmployeesList/EmployeesList";
-function Employees() {
+function EmployeeUpdatePage() {
   // Destructure the auth hook 
   const { isLogged, isAdmin } = useAuth();
 
@@ -24,7 +24,7 @@ function Employees() {
                 <AdminMenu />
               </div>
               <div className="col-md-9 admin-right-side">
-                <EmployeesList />
+                <EmployeeUpdate />
               </div>
             </div>
           </div>
@@ -47,4 +47,4 @@ function Employees() {
 
 }
 
-export default Employees; 
+export default EmployeeUpdatePage; 
