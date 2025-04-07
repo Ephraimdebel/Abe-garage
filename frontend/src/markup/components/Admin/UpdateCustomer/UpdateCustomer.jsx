@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 // import customer.service.js 
 // Import the useAuth hook 
 import { useAuth } from "../../../../Contexts/AuthContext";
 import customerService from '../../../../services/customer.service';
+import { useNavigate } from 'react-router';
 
 function UpdateCustomer({id}) {
   const [customer_first_name, setFirstName] = useState('');
   const [customer_last_name, setLastName] = useState('');
   const [customer_phone_number, setPhoneNumber] = useState('');
+  const [customer_email, setEmail] = useState('');
   const [active_customer_status, setActiveCustomerStatus] = useState(1);
 
   // Errors 
@@ -16,6 +18,8 @@ function UpdateCustomer({id}) {
   const [serverError, setServerError] = useState('');
   const [success, setSuccess] = useState('');
 
+  const navigator = useNavigate();
+
   // Create a variable to hold the user's token
   let loggedInEmployeeToken = '';
   // Destructure the auth hook and get the token 
@@ -23,6 +27,23 @@ function UpdateCustomer({id}) {
   if (employee && employee.employee_token) {
     loggedInEmployeeToken = employee.employee_token;
   }
+  // Get the customer id from the URL
+  useEffect(() => {
+    const customer = customerService.getSingleCustomer(id, loggedInEmployeeToken).then((response) => response.json()).then((data) => {
+      // If Error is returned from the API server, set the error message
+      if (data.error) {
+        setServerError(data.error)
+      } else {
+        console.log("customer -> ", data);
+        // Handle successful response
+        setEmail(data.customer_email);
+      }
+    }).catch((err) => {
+      console.log(err);
+    }
+    );
+  }, []);
+
 
   const handleSubmit = (e) => {
     // Prevent the default behavior of the form
@@ -35,21 +56,6 @@ function UpdateCustomer({id}) {
       valid = false;
     } else {
       setFirstNameRequired('');
-    }
-    // Email is required
-    if (!customer_email) {
-      setEmailError('Email is required');
-      valid = false;
-    } else if (!customer_email.includes('@')) {
-      setEmailError('Invalid email format');
-    } else {
-      const regex = /^\S+@\S+\.\S+$/;
-      if (!regex.test(customer_email)) {
-        setEmailError('Invalid email format');
-        valid = false;
-      } else {
-        setEmailError('');
-      }
     }
 
     // If the form is not valid, do not submit 
@@ -79,7 +85,7 @@ function UpdateCustomer({id}) {
           // For now, just redirect to the home page 
           setTimeout(() => {
             // window.location.href = '/admin/customers';
-            window.location.href = '/';
+            navigator('/admin/customers');
           }, 2000);
         }
       })
@@ -100,8 +106,8 @@ function UpdateCustomer({id}) {
     <section className="contact-section">
       <div className="auto-container">
         <div className="contact-title">
-          <h2>Edit: Customer Name</h2>
-            <h4 style={{fontWeight: 'bold'}}>customer email: customer@email.com</h4>
+          <h2>Edit: Customer email </h2>
+            <h4 style={{fontWeight: 'bold'}}>customer email: {customer_email}</h4>
         </div>
         <div>
         </div>

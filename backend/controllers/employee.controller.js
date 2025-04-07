@@ -88,11 +88,16 @@ async function getEmployeeById(req, res, next) {
 async function updateEmployee(req, res, next) {
   try {
     const employeeData = req.body;
+    const { id } = req.params;
+    
+    employeeData.employee_id = Number(id);
+    console.log("employeeData -> ", employeeData);
 
     // Check if the employee exists before updating
-    const employeeExists = await employeeService.checkIfEmployeeExists(employeeData.employee_id);
+    const employeeExists = await employeeService.getEmployeeById(employeeData.employee_id);
     
     if (!employeeExists) {
+      console.log("Employee not found!");
       return res.status(400).json({
         error: "Employee not found!"
       });

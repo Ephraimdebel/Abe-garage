@@ -38,6 +38,9 @@ import EditCustomer from './markup/pages/admin/EditCustomer';
 import EmployeeUpdatePage from './markup/pages/admin/EmployeeUpdatePage';
 import AddVehiclePage from './markup/pages/admin/AddVehiclePage';
 import Vehicle from './markup/components/Admin/Vehicles/Vehicle';
+import ServiceListPage from './markup/pages/admin/ServiceListPage';
+import OrdersTwo from './markup/pages/admin/OrderesTwo';
+import OrdersThree from './markup/pages/admin/OrdersThree';
 
 
 function App() {
@@ -55,9 +58,20 @@ function App() {
         <Route path='/admin/vehicle' element = {<Vehicle />} />
 
         <Route path='/admin/add-customer' element = {<AddNewCustomerPage />} />
-        <Route path='/admin/customer/edit' element = {<EditCustomer />} />
-
+        <Route path='/admin/customer/edit/:id' element = {<EditCustomer />} />
         <Route path='/admin/customers/:id' element = {<AddVehiclePage />} />
+
+        <Route path='/admin/order' element = {<Orders />} />
+        <Route path='/admin/orderstwo/:id' element = {<OrdersTwo />} />
+        <Route path='/admin/ordersthree/:id' element = {<OrdersThree/>} />
+
+        <Route path="/admin/services"
+          element={
+            // <PrivateAuthRoute roles={[1, 2, 3]}>
+              <ServiceListPage />
+            // </PrivateAuthRoute>
+          } />
+        {/* // Add the Service List Route  */}
         {/* // Add the Orders Route  */}
         <Route path="/admin/orders"
           element={
@@ -74,7 +88,7 @@ function App() {
           } />
         {/* // Add the Employees Route  */}
         <Route path="/admin/employees" element={<Employees />} />
-        <Route path="/admin/employee/edit" element={<EmployeeUpdatePage />} />
+        <Route path="/admin/employee/edit/:id" element={<EmployeeUpdatePage />} />
         <Route path="/admin/add-employee"
           element={
             // <PrivateAuthRoute roles={[3]}>

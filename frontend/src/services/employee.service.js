@@ -30,9 +30,39 @@ const getAllEmployees = async (token) => {
   return response;
 }
 
+
+const getSingleEmployee = async (id,token) => {
+  // console.log(token);
+  const requestOptions = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-access-token': token
+    }
+  };
+  const response = await fetch(`${api_url}/api/employee/${id}`, requestOptions);
+  return response;
+}
+
+const UpdateEmploye = async(formData, loggedInEmployeeToken,id) => {
+  const requestOptions = {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-access-token': loggedInEmployeeToken
+    },
+    body: JSON.stringify(formData)
+  };
+  console.log(requestOptions);
+  const response = await fetch(`${api_url}/api/employee/${id}`, requestOptions);
+  console.log("response",response);
+  return response;
+}
 // Export all the functions 
 const employeeService = {
   createEmployee,
-  getAllEmployees
+  getAllEmployees,
+  getSingleEmployee,
+  UpdateEmploye
 }
 export default employeeService; 

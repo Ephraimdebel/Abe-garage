@@ -33,11 +33,24 @@ const getVehiclesByCustomer = async (loggedInEmployeeToken,id) => {
   return response;
 }
 
+const getVehicle = async (loggedInEmployeeToken,id) => {
+  // console.log(token);
+  const requestOptions = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-access-token': loggedInEmployeeToken
+    }
+  };
+  const response = await fetch(`${api_url}/api/vehicle/${id}`, requestOptions);
+  return response;
+}
 
 
 // Export all the functions 
 const vehicleService = {
     getVehiclesByCustomer,
-    createVehicle
+    createVehicle,
+    getVehicle
 }
 export default vehicleService; 

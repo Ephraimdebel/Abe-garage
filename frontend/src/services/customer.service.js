@@ -44,7 +44,7 @@ const UpdateCustomer = async (formData, loggedInEmployeeToken,id) => {
   return response;
 }
 // A function to send get request to get all employees
-const getSingleCustomer = async (loggedInEmployeeToken,id) => {
+const getSingleCustomer = async (id,loggedInEmployeeToken) => {
   // console.log(token);
   const requestOptions = {
     method: 'GET',

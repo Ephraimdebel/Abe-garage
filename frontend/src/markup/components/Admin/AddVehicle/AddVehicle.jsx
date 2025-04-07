@@ -34,7 +34,7 @@ const AddVehicle = ({ id }) => {
   }
   useEffect(() => {
     const customerslist = createCustomer
-      .getSingleCustomer(loggedInEmployeeToken, id)
+      .getSingleCustomer(id,loggedInEmployeeToken)
       .then((response) => response.json())
       .then((data) => {
         // console.log("here -> ",data);
@@ -50,7 +50,7 @@ const AddVehicle = ({ id }) => {
         console.log(err);
       });
 
-    const vehiclelist = vehicleService
+const vehiclelist = vehicleService
       .getVehiclesByCustomer(loggedInEmployeeToken, id)
       .then((response) => response.json())
       .then((data) => {
@@ -128,7 +128,7 @@ const AddVehicle = ({ id }) => {
   }
 
   return (
-    <section className="contact-section">
+    <section className="contact-section" >
       <div className="auto-container">
         <section class="history-section">
           <div class="auto-container">
@@ -208,13 +208,13 @@ const AddVehicle = ({ id }) => {
 
 
       {showAddCustomer && (
-    <section className="contact-section">
+    <section className="contact-section my-5" style={{backgroundColor: "#ffff"}}>
       <div className="auto-container">
-        <div className="contact-title">
+        <div className="contact-title pl-5">
           <h2>Add a new Vehicle</h2>
         </div>
         <div className="row clearfix">
-          <div className="form-column col-lg-7">
+          <div className="form-column col-lg-9 px-5">
             <div className="inner-column">
               <div className="contact-form">
                 <form onSubmit={handleSubmit}>

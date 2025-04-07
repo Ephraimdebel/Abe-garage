@@ -105,6 +105,7 @@ async function getCustomers() {
   };
   
   const updateCustomer = async (customerId, updatedData) => {
+    console.log("updateCustomer -> ", updatedData);
     try {
       // Initialize an array to hold the dynamic SET fields and values
       const setClauses = [];

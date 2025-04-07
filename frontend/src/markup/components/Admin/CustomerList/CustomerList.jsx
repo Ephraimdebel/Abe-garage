@@ -90,15 +90,16 @@ const CustomerList = () => {
                   ✏️
                 </Button> */}
                 
-                <a href={`/admin/customers/${customer.customer_id}`} className="pr-3">
-                  <Button variant="outline-primary" size="sm">
+                <a href={`/admin/customer/edit/${customer.customer_id}`} className="pr-3">
+                  <Button variant="" size="sm">
                   <FaEdit />
+                  edit
                   </Button>
                 </a>
 
                 <a href={`/admin/customers/${customer.customer_id}`}>
-                  <Button variant="outline-primary" size="sm">
-                  <MdAdsClick />
+                  <Button variant="outline" size="sm">
+                  <MdAdsClick /> view
                   </Button>
                 </a>
               </td>

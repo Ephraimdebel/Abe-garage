@@ -65,6 +65,7 @@ async function getAllEmployees() {
 
 // A function to get a single employee by ID
 async function getEmployeeById(employeeId) {
+  
   const query = `
     SELECT * FROM employee 
     INNER JOIN employee_info ON employee.employee_id = employee_info.employee_id 
@@ -81,53 +82,69 @@ async function getEmployeeById(employeeId) {
 // Service function to update an employee
 async function updateEmployee(employee) {
   let updatedEmployee = {};
+  console.log("employee -> ", employee);
   try {
-    // Update employee basic info
-    const query1 = `
-      UPDATE employee 
-      SET active_employee = ? 
-      WHERE employee_id = ?;
-    `;
-    const rows1 = await conn.query(query1, [employee.active_employee, employee.employee_id]);
-
-    if (rows1.affectedRows !== 1) {
-      return false;
+    // Update only if `active_employee` is provided
+    if (employee.active_employee_status !== undefined) {
+      const query = `
+        UPDATE employee 
+        SET active_employee = ? 
+        WHERE employee_id = ?;
+      `;
+      const result = await conn.query(query, [employee.active_employee_status, employee.employee_id]);
+      if (result.affectedRows !== 1) return false;
     }
 
-    // Update employee details in employee_info table
-    const query2 = `
-      UPDATE employee_info 
-      SET employee_first_name = ?, 
-          employee_last_name = ?, 
-          employee_phone = ? 
-      WHERE employee_id = ?;
-    `;
-    const rows2 = await conn.query(query2, [
-      employee.employee_first_name,
-      employee.employee_last_name,
-      employee.employee_phone,
-      employee.employee_id
-    ]);
+    // Update fields in employee_info only if at least one is provided
+    const infoFields = [];
+    const infoValues = [];
 
-    // Update employee role in employee_role table
-    const query3 = `
-      UPDATE employee_role 
-      SET company_role_id = ? 
-      WHERE employee_id = ?;
-    `;
-    const rows3 = await conn.query(query3, [employee.company_role_id, employee.employee_id]);
+    if (employee.employee_first_name !== undefined) {
+      infoFields.push('employee_first_name = ?');
+      infoValues.push(employee.employee_first_name);
+    }
+    if (employee.employee_last_name !== undefined) {
+      infoFields.push('employee_last_name = ?');
+      infoValues.push(employee.employee_last_name);
+    }
+    if (employee.employee_phone_number !== undefined) {
+      infoFields.push('employee_phone = ?');
+      infoValues.push(employee.employee_phone_number);
+    }
 
-    // Construct updated employee object to return
+    if (infoFields.length > 0) {
+      const query = `
+        UPDATE employee_info 
+        SET ${infoFields.join(', ')} 
+        WHERE employee_id = ?;
+      `;
+      infoValues.push(employee.employee_id);
+      await conn.query(query, infoValues);
+    }
+
+    // Update role if `company_role_id` is provided
+    if (employee.company_role_id !== undefined) {
+      const query = `
+        UPDATE employee_role 
+        SET company_role_id = ? 
+        WHERE employee_id = ?;
+      `;
+      await conn.query(query, [employee.company_role_id, employee.employee_id]);
+    }
+
+    // Final updated object
     updatedEmployee = {
       employee_id: employee.employee_id
     };
 
   } catch (err) {
     console.error("Error updating employee:", err);
+    return false;
   }
 
   return updatedEmployee;
 }
+
 
 // Service function to delete an employee
 async function deleteEmployee(employee_id) {

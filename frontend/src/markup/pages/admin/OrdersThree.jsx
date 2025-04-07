@@ -1,8 +1,11 @@
 import React from "react";
 import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
-import NewOrders from "../../components/Admin/Orders/NewOrders";
+import NewOrdersTwo from "../../components/Admin/Orders/newOrdersTwo";
+import { useParams } from "react-router";
+import NewOrdersThree from "../../components/Admin/Orders/NewOrderThree";
 
-const Orders = () => {
+const OrdersThree = () => {
+    const {id} =  useParams()
   return (
 <div>
     <div className="container-fluid admin-pages">
@@ -11,7 +14,7 @@ const Orders = () => {
           <AdminMenu />
         </div>
         <div className="col-md-9 admin-right-side">
-          <NewOrders />
+          <NewOrdersThree id = {id}/> 
         </div>
       </div>
     </div>
@@ -19,4 +22,4 @@ const Orders = () => {
   );
 }
 
-export default Orders; 
+export default OrdersThree; 

@@ -14,7 +14,7 @@ router.get("/api/employees", employeeController.getAllEmployees);
 
 router.get("/api/employee/:id", employeeController.getEmployeeById);
 
-router.put("/api/employee/update", employeeController.updateEmployee);
+router.patch("/api/employee/:id", employeeController.updateEmployee);
 
 router.delete("/api/employee/:id", employeeController.deleteEmployee);
 

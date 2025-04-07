@@ -7,6 +7,8 @@ import { useAuth } from "../../../../Contexts/AuthContext";
 import { format } from 'date-fns'; // To properly format the date on the table 
 // Import the getAllEmployees function  
 import employeeService from "../../../../services/employee.service";
+import { FaEdit, FaRegEdit, FaTrashAlt } from "react-icons/fa";
+import { MdAdsClick } from "react-icons/md";
 
 // Create the EmployeesList component 
 const EmployeesList = () => {
@@ -91,9 +93,15 @@ const EmployeesList = () => {
                       <td>{format(new Date(employee.added_date), 'MM - dd - yyyy | kk:mm')}</td>
                       <td>{employee.company_role_name}</td>
                       <td>
-                        <div className="edit-delete-icons">
-                          edit | delete
-                        </div>
+                      
+                                    <a href={`/admin/employee/edit/${employee.employee_id}`} className="pr-3">
+                                         <FaRegEdit className="text-dark cursor-pointer mr-2" size={18} />
+                                   
+                                    </a>
+                    
+                                    <a href={`/admin/employee/${employee.employee_id}`}>
+                                     <FaTrashAlt className="text-danger cursor-pointer" size={18} />
+                                    </a>
                       </td>
                     </tr>
                   ))}

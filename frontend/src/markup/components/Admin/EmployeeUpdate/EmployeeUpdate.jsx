@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 // import employee.service.js 
 // Import the useAuth hook 
 import { useAuth } from "../../../../Contexts/AuthContext";
 import employeeService from '../../../../services/employee.service';
+import { useNavigate } from 'react-router';
 
 function EmployeeUpdate({id}) {
   const [employee_first_name, setFirstName] = useState('');
   const [employee_last_name, setLastName] = useState('');
   const [employee_phone_number, setPhoneNumber] = useState('');
+  const [employee_email, setEmail] = useState('');
   const [active_employee_status, setActiveemployeeStatus] = useState(1);
   const [company_role_id, setCompany_role_id] = useState(1);
 
@@ -15,7 +17,9 @@ function EmployeeUpdate({id}) {
   const [firstNameRequired, setFirstNameRequired] = useState('');
 
   const [serverError, setServerError] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigator = useNavigate();
 
   // Create a variable to hold the user's token
   let loggedInEmployeeToken = '';
@@ -25,6 +29,21 @@ function EmployeeUpdate({id}) {
     loggedInEmployeeToken = employee.employee_token;
   }
 
+  useEffect(() => {
+    const employee = employeeService.getSingleEmployee(id, loggedInEmployeeToken).then((response) => response.json()).then((data) => {
+      // If Error is returned from the API server, set the error message
+      if (data.error) {
+        setServerError(data.error)
+      } else {
+        console.log("employee -> ", data.data);
+        // Handle successful response
+        setEmail(data.data.employee_email);
+      }
+    }).catch((err) => {
+      console.log(err);
+    }
+    );
+  },[])
   const handleSubmit = (e) => {
     // Prevent the default behavior of the form
     e.preventDefault();
@@ -66,7 +85,7 @@ function EmployeeUpdate({id}) {
   
     };
     // Pass the form data to the service 
-    const newemployee = employeeService.Updateemployee(formData, loggedInEmployeeToken,id);
+    const newemployee = employeeService.UpdateEmploye(formData, loggedInEmployeeToken,id);
     newemployee.then((response) => response.json())
       .then((data) => {
         // console.log(data);
@@ -81,7 +100,7 @@ function EmployeeUpdate({id}) {
           // For now, just redirect to the home page 
           setTimeout(() => {
             // window.location.href = '/admin/employees';
-            window.location.href = '/';
+            navigator('/admin/employees');
           }, 2000);
         }
       })
@@ -103,7 +122,7 @@ function EmployeeUpdate({id}) {
       <div className="auto-container">
         <div className="contact-title">
           <h2>Edit: employee Name</h2>
-            <h4 style={{fontWeight: 'bold'}}>employee email: employee@email.com</h4>
+            <h4 style={{fontWeight: 'bold'}}>employee email: {employee_email} </h4>
         </div>
         <div>
         </div>
