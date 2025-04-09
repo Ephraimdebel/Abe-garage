@@ -41,6 +41,8 @@ import Vehicle from './markup/components/Admin/Vehicles/Vehicle';
 import ServiceListPage from './markup/pages/admin/ServiceListPage';
 import OrdersTwo from './markup/pages/admin/OrderesTwo';
 import OrdersThree from './markup/pages/admin/OrdersThree';
+import OrdersFour from './markup/pages/admin/OrderFour';
+import OrderDetail from './markup/components/OrderDetail/OrderDetail';
 
 
 function App() {
@@ -64,6 +66,9 @@ function App() {
         <Route path='/admin/order' element = {<Orders />} />
         <Route path='/admin/orderstwo/:id' element = {<OrdersTwo />} />
         <Route path='/admin/ordersthree/:id' element = {<OrdersThree/>} />
+        <Route path='/admin/orders' element = {<OrdersFour />} />
+        <Route path='/admin/order/:id' element = {<OrderDetail />} />
+
 
         <Route path="/admin/services"
           element={

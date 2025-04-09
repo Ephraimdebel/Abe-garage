@@ -279,3 +279,9 @@ input:disabled {
   padding-top:30px;
   background-color: #ffff;
 }
+.row p {
+  margin-bottom: 0 !important;
+}
+.service-block-one h2{
+  margin-bottom: 25px !important;
+}

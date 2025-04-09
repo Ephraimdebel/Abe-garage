@@ -6,9 +6,9 @@ const addOrder = async (orderData) => {
     customer_id,
     vehicle_id,
     order_description,
-    estimated_completion_date,
-    completion_date,
-    order_completed,
+    // estimated_completion_date,
+    // completion_date,
+    // order_completed,
     order_services,
   } = orderData;
 
@@ -20,7 +20,7 @@ const addOrder = async (orderData) => {
     const orderResult = await conn.query(
       `INSERT INTO orders (employee_id, customer_id, vehicle_id, active_order, order_hash) 
        VALUES (?, ?, ?, ?, UUID())`,
-      [employee_id, customer_id, vehicle_id, order_completed]
+      [employee_id, customer_id, vehicle_id, 0]
     );
     if (orderResult.affectedRows === 0) {
       throw new Error("Failed to create order");
@@ -29,16 +29,22 @@ const addOrder = async (orderData) => {
 
     // Insert into order_info table
     await conn.query(
+      `INSERT INTO order_info (order_id, order_total_price, additional_request, notes_for_internal_use, notes_for_customer, additional_requests_completed) 
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [order_id, 0, order_description || null, null, null, 0]
+    );
+    // order_description
+    /*
+        await conn.query(
       `INSERT INTO order_info (order_id, order_total_price, estimated_completion_date, completion_date, additional_request, notes_for_internal_use, notes_for_customer, additional_requests_completed) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [order_id, 0, estimated_completion_date, completion_date, order_description, null, null, order_completed]
-    );
-
+    );*/
     // Insert into order_services table
-    for (const service of order_services) {
+    for (const service_id of order_services) {
       await conn.query(
         `INSERT INTO order_services (order_id, service_id, service_completed) VALUES (?, ?, ?)`,
-        [order_id, service.service_id, 0]
+        [order_id, service_id, 0]
       );
     }
 
@@ -55,6 +61,7 @@ const addOrder = async (orderData) => {
   } catch (error) {
     // Rollback transaction in case of an error (uncomment for production)
     // await connection.rollback();
+    console.log("error" , error)
     throw error;
   }
 };
@@ -63,94 +70,158 @@ const addOrder = async (orderData) => {
 
 const getAllOrders = async () => {
   try {
-    // Fetch all orders with related info, including order status
     const orders = await conn.query(`
       SELECT 
-        o.order_id, 
-        o.employee_id, 
-        o.customer_id, 
-        o.vehicle_id, 
-        o.order_hash,
-        oi.additional_request AS order_description, 
-        o.order_date, 
-        oi.estimated_completion_date, 
-        oi.completion_date, 
-        oi.additional_requests_completed AS order_completed,
-        os.order_status AS status
-      FROM orders o
-      LEFT JOIN order_info oi ON o.order_id = oi.order_id
-      LEFT JOIN order_status os ON o.order_id = os.order_id
+  o.order_id,
+  o.order_date,
+  o.order_hash,
+
+  -- Employee
+  CONCAT(ei.employee_first_name, ' ', ei.employee_last_name) AS received_by,
+
+  -- Customer
+  CONCAT(ci.customer_first_name, ' ', ci.customer_last_name) AS customer_name,
+  cid.customer_email AS customer_email,
+  cid.customer_phone_number AS customer_phone,
+
+  -- Vehicle
+  v.vehicle_make,
+  v.vehicle_model,
+  v.vehicle_year,
+  v.vehicle_tag AS plate_number,
+
+  -- Status
+  os.order_status
+
+FROM orders o
+LEFT JOIN customer_identifier cid ON o.customer_id = cid.customer_id
+LEFT JOIN customer_info ci ON ci.customer_id = cid.customer_id
+LEFT JOIN customer_vehicle_info v ON o.vehicle_id = v.vehicle_id
+LEFT JOIN employee e ON o.employee_id = e.employee_id
+LEFT JOIN employee_info ei ON ei.employee_id = e.employee_id
+LEFT JOIN order_status os ON o.order_id = os.order_id
+ORDER BY o.order_id DESC;
+
     `);
 
-    // Fetch order services
-    const services = await conn.query(`
-      SELECT order_id, service_id 
-      FROM order_services
-    `);
-
-    // Map services to orders
-    const ordersWithServices = orders.map((order) => ({
-      ...order,
-      order_services: services
-        .filter((service) => service.order_id === order.order_id)
-        .map((s) => ({ service_id: s.service_id })),
-    }));
-
-    return ordersWithServices;
+    return orders;
   } catch (error) {
-    console.error("Error in getAllOrders:", error);
+    console.error("Error fetching all orders:", error);
     throw error;
   }
 };
 
+// const getOrderById = async (orderId) => {
+//   try {
+//     // Fetch order details with order status
+//     const orders = await conn.query(
+//       `
+//       SELECT 
+//         o.order_id, 
+//         o.employee_id, 
+//         o.customer_id, 
+//         o.vehicle_id, 
+//         oi.additional_request AS order_description, 
+//         o.order_date, 
+//         oi.estimated_completion_date, 
+//         oi.completion_date, 
+//         oi.additional_requests_completed AS order_completed,
+//         os.order_status AS status
+//       FROM orders o
+//       LEFT JOIN order_info oi ON o.order_id = oi.order_id
+//       LEFT JOIN order_status os ON o.order_id = os.order_id
+//       WHERE o.order_id = ?
+//       `,
+//       [orderId]
+//     );
+
+//     if (orders.length === 0) {
+//       return null; // No order found
+//     }
+
+//     // Fetch related services
+//     const services = await conn.query(
+//       `
+//       SELECT service_id 
+//       FROM order_services 
+//       WHERE order_id = ?
+//       `,
+//       [orderId]
+//     );
+
+//     return {
+//       ...orders[0],
+//       order_services: services.map((s) => ({ service_id: s.service_id })),
+//     };
+//   } catch (error) {
+//     console.error("Error in getOrderById:", error);
+//     throw error;
+//   }
+// };
+
 const getOrderById = async (orderId) => {
   try {
-    // Fetch order details with order status
-    const orders = await conn.query(
+    // Fetch full order with customer and vehicle info
+    const order = await conn.query(
       `
       SELECT 
-        o.order_id, 
-        o.employee_id, 
-        o.customer_id, 
-        o.vehicle_id, 
-        oi.additional_request AS order_description, 
-        o.order_date, 
-        oi.estimated_completion_date, 
-        oi.completion_date, 
-        oi.additional_requests_completed AS order_completed,
-        os.order_status AS status
+        o.order_id,
+        o.order_date,
+        o.order_hash,
+        os.order_status,
+
+        -- Customer info
+        ci.customer_first_name,
+        ci.customer_last_name,
+        cid.customer_email,
+        cid.customer_phone_number,
+        ci.active_customer_status,
+
+        -- Vehicle info
+        v.vehicle_make,
+        v.vehicle_year,
+        v.vehicle_mileage,
+        v.vehicle_tag,
+
+        -- Order info
+        oi.additional_request,
+        oi.estimated_completion_date,
+        oi.completion_date,
+        oi.additional_requests_completed AS order_completed
+
       FROM orders o
       LEFT JOIN order_info oi ON o.order_id = oi.order_id
       LEFT JOIN order_status os ON o.order_id = os.order_id
+      LEFT JOIN customer_identifier cid ON o.customer_id = cid.customer_id
+      LEFT JOIN customer_info ci ON cid.customer_id = ci.customer_id
+      LEFT JOIN customer_vehicle_info v ON o.vehicle_id = v.vehicle_id
       WHERE o.order_id = ?
       `,
       [orderId]
     );
 
-    if (orders.length === 0) {
-      return null; // No order found
-    }
+    if (!order) return null;
 
-    // Fetch related services
+    // Get all services related to this order
     const services = await conn.query(
       `
-      SELECT service_id 
-      FROM order_services 
-      WHERE order_id = ?
+      SELECT cs.service_name
+      FROM order_services os
+      LEFT JOIN common_services cs ON os.service_id = cs.service_id
+      WHERE os.order_id = ?
       `,
       [orderId]
     );
 
     return {
-      ...orders[0],
-      order_services: services.map((s) => ({ service_id: s.service_id })),
+      ...order,
+      services: services.map((s) => s.service_name)
     };
   } catch (error) {
     console.error("Error in getOrderById:", error);
     throw error;
   }
 };
-
 
 const updateOrder = async (orderId, updateData) => {
   try {

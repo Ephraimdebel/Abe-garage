@@ -59,23 +59,23 @@ const NewOrdersThree = ({id}) => {
                 console.log(err);
               });
 
-              const service = serviceServices.getAllServices(loggedInEmployeeToken).then((response) => response.json()).then((data) => {
-                // console.log("here -> ",data);
-                // If Error is returned from the API server, set the error message
-                if (!data) {
-                  setServerError(data.error)
-                } else {
-                  // Handle successful response
-                  setServices(data);
-                }
-              }).catch((err) => {
-                console.log(err);
-              }
-            );
+            //   const service = serviceServices.getAllServices(loggedInEmployeeToken).then((response) => response.json()).then((data) => {
+            //     // console.log("here -> ",data);
+            //     // If Error is returned from the API server, set the error message
+            //     if (!data) {
+            //       setServerError(data.error)
+            //     } else {
+            //       // Handle successful response
+            //       setServices(data);
+            //     }
+            //   }).catch((err) => {
+            //     console.log(err);
+            //   }
+            // );
     },[])
 
     return (
-        <section className="contact-section" >
+        <section className="contact-section pl-0" >
            <div className="auto-container">
            <section class="history-section">
            <div className="contact-title">
@@ -161,7 +161,7 @@ const NewOrdersThree = ({id}) => {
                 <ServiceCard key={service.service_id} service={service} />
             ))
 } */}
-<AdditionalRequests />
+<AdditionalRequests customer_id = {id} vehicle_id = {vehicles.vehicle_id}/>
 
         
       </div>
