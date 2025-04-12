@@ -12,6 +12,7 @@ async function addService(service_name, service_description) {
     throw error;
   }
 }
+
 async function getAllServices() {
   try {
     const query = "SELECT * FROM common_services";
@@ -28,7 +29,6 @@ async function getServiceById(params) {
   const [row] = await conn.query(query, [params])
   return row;
 }
-
 // Function to update a service partially
 async function updateService(serviceId, serviceName, serviceDescription) {
   try {
@@ -58,4 +58,35 @@ async function updateService(serviceId, serviceName, serviceDescription) {
     throw error;
   }
 }
-module.exports = { addService,getAllServices ,getServiceById,updateService};
+
+async function deleteService(service_id) {
+  try {
+    // Optional: First check if the service is linked to any existing orders
+    const linkedOrders = await conn.query(
+      'SELECT * FROM order_services WHERE service_id = ?',
+      [service_id]
+    );
+
+    if (linkedOrders.length > 0) {
+      throw new Error('Cannot delete service: It is linked to existing orders.');
+    }
+
+    // console.log(result)
+    // Delete the service from the common_services table
+    const result = await conn.query(
+      'DELETE FROM common_services WHERE service_id = ?',
+      [service_id]
+    );
+
+    if (result.affectedRows === 0) {
+      throw new Error('Service not found or already deleted.');
+    }
+    return { success: true, message: 'Service deleted successfully' };
+  } catch (err) {
+    console.error('Error deleting service:', err.message);
+    return { success: false, message: err.message };
+  }
+}
+
+
+module.exports = { addService,getAllServices ,getServiceById,updateService,deleteService};

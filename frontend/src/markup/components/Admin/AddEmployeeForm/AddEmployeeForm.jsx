@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import employeeService from '../../../../services/employee.service';
 // Import the useAuth hook 
 import { useAuth } from "../../../../Contexts/AuthContext";
+import {useNavigate} from 'react-router-dom'
 
 function AddEmployeeForm(props) {
   const [employee_email, setEmail] = useState('');
@@ -18,6 +19,8 @@ function AddEmployeeForm(props) {
   const [passwordError, setPasswordError] = useState('');
   const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState('');
+
+  const navigate = useNavigate()
 
   // Create a variable to hold the user's token
   let loggedInEmployeeToken = '';
@@ -90,7 +93,8 @@ function AddEmployeeForm(props) {
           // For now, just redirect to the home page 
           setTimeout(() => {
             // window.location.href = '/admin/employees';
-            window.location.href = '/';
+            // window.location.href = '/';
+            navigate('/admin/employees')
           }, 2000);
         }
       })

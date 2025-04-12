@@ -5,6 +5,7 @@ import { useAuth } from "../../../../Contexts/AuthContext";
 import { FaEdit } from "react-icons/fa";
 import { MdAdsClick } from "react-icons/md";
 import { format } from "date-fns";
+import { ExternalLink } from "lucide-react";
 
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
@@ -71,7 +72,7 @@ const CustomerList = () => {
             <th>Phone</th>
             <th>Added Date</th>
             <th>Active</th>
-            <th>Edit</th>
+            <th>Edit / view</th>
           </tr>
         </thead>
         <tbody>
@@ -92,14 +93,14 @@ const CustomerList = () => {
                 
                 <a href={`/admin/customer/edit/${customer.customer_id}`} className="pr-3">
                   <Button variant="" size="sm">
-                  <FaEdit />
-                  edit
+                  <FaEdit size={18}/>
+                  
                   </Button>
                 </a>
 
                 <a href={`/admin/customers/${customer.customer_id}`}>
                   <Button variant="outline" size="sm">
-                  <MdAdsClick /> view
+                  <ExternalLink className="text-secondary" style={{ width: 18, height: 18 }} /> 
                   </Button>
                 </a>
               </td>

@@ -11,6 +11,8 @@ router.get("/api/service/:id",serviceController.getServiceById)
 
 router.patch("/api/service",serviceController.updateService);
 
+router.delete('/api/service/:id',serviceController.deleteService);
+
 
 
 // authMiddleware.verifyToken, --middleware

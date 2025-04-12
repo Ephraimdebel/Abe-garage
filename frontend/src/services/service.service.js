@@ -31,9 +31,35 @@ const getAllServices = async (loggedInEmployeeToken) => {
   }
 
   
+  const deleteService = async(id,loggedInEmployeeToken)=>{
+
+    const requestOptions = {
+      method : 'DELETE',
+      headers:{
+        'Content-Type':'application/json',
+        'x-access-token':loggedInEmployeeToken
+      }
+    }
+    const response = await fetch(`${api_url}/api/service/${id}`,requestOptions)
+    return response
+  }
+  const updateService = (service_id, service_name, service_description, loggedInEmployeeToken) => {
+    const requestOptions = 
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        'x-access-token':loggedInEmployeeToken
+      },
+      body: JSON.stringify({service_id, service_name, service_description}),
+    }
+    return fetch(`${api_url}/api/service`, requestOptions);
+  };
   const serviceServices = {
     getAllServices,
-    createService
+    createService,
+    deleteService,
+    updateService
   }
 
   export default serviceServices;

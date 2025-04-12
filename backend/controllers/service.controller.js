@@ -86,4 +86,26 @@ async function updateService(req, res) {
   }
 }
 
-module.exports = { addService,getAllServices,getServiceById,updateService };
+async function deleteService(req,res){
+ 
+  try{
+
+    const {id} = req.params;
+   
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "Invalid service ID!" });
+    }
+    const service = await serviceService.deleteService(id)
+    if (!service?.success){
+      res.status(400).json({error:service?.message})
+    }
+    else{
+      res.status(200).json({success:"true"})
+    }
+
+  }catch{
+    res.status(500).json({error:"server error"})
+  }
+}
+
+module.exports = { addService,getAllServices,getServiceById,updateService ,deleteService};

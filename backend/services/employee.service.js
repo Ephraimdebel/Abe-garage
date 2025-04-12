@@ -163,6 +163,8 @@ async function deleteEmployee(employee_id) {
     return false;
   }
 }
+
+
 // Export the functions for use in the controller
 module.exports = {
   checkIfEmployeeExists,

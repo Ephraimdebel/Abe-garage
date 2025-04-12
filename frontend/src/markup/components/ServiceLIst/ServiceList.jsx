@@ -1,60 +1,119 @@
-import React, { useEffect } from "react";
-import { Card } from "react-bootstrap";
-import { FaRegEdit, FaTrashAlt } from "react-icons/fa";
-import ServiceCard from "./ServiceCard";
-import AddService from "../Admin/AddService/AddService";
+import React, { useEffect, useState } from "react";
 import serviceServices from "../../../services/service.service";
 import { useAuth } from "../../../Contexts/AuthContext";
-import { useState } from "react";
+import ServiceCard from "./ServiceCard";
+import AddService from "../Admin/AddService/AddService";
+import EditServiceModal from "./EditServiceModal"; // Import modal
+
 const ServiceListCard = () => {
-     const [services, setServices] = useState([]);
-const [serverError, setServerError] = useState(null);
+  const [services, setServices] = useState([]);
+  const [serverError, setServerError] = useState(null);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
 
-
-  // Create a variable to hold the user's token
-  let loggedInEmployeeToken = '';
-  // Destructure the auth hook and get the token 
   const { employee } = useAuth();
-  if (employee && employee.employee_token) {
-    loggedInEmployeeToken = employee.employee_token;
-  }
+  const loggedInEmployeeToken = employee?.employee_token || "";
 
-    useEffect(() => {
-        const customerslist = serviceServices.getAllServices(loggedInEmployeeToken).then((response) => response.json()).then((data) => {
-            // console.log("here -> ",data);
-            // If Error is returned from the API server, set the error message
-            if (!data) {
-              setServerError(data.error)
-            } else {
-              // Handle successful response
-              setServices(data);
-            }
-          }).catch((err) => {
-            console.log(err);
-          }
-        );
-        }, []);
+  const handleDelete = (id) => {
+    const confirm = window.confirm("Are you sure you want to delete this service?");
+    if (!confirm) return;
+
+    serviceServices
+      .deleteService(id, loggedInEmployeeToken)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success) {
+          setServices((prev) => prev.filter((serv) => serv.service_id !== id));
+          setSuccess("Service successfully deleted");
+          setError("");
+        } else {
+          setError(data?.error || "Delete failed");
+          setSuccess("");
+        }
+      });
+  };
+
+  const handleEditClick = (service) => {
+    setSelectedService(service);
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = (id, name, description) => {
+    serviceServices
+      .updateService(id, name, description, loggedInEmployeeToken)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success) {
+          setServices((prev) =>
+            prev.map((srv) =>
+              srv.service_id === id
+                ? { ...srv, service_name: name, service_description: description }
+                : srv
+            )
+          );
+          setSuccess("Service updated successfully");
+          setError("");
+          setShowEditModal(false);
+        } else {
+          setError(data?.error || "Update failed");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setError("An error occurred");
+      });
+  };
+
+  useEffect(() => {
+    serviceServices
+      .getAllServices(loggedInEmployeeToken)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data) {
+          setServerError(data?.error || "Server error");
+        } else {
+          setServices(data);
+        }
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   return (
     <section className="contact-section">
       <div className="auto-container">
-      <div className="contact-title">
+        <div className="contact-title">
           <h2>Services We provide</h2>
-          <div className="text">Bring to the table win-win survival strategies to ensure proactive domination. At
-                the end of the day, going forward, a new normal that has evolved from generation X is on the
-                runway heading towards a streamlined cloud solution. </div>
-     
+          <div className="text">
+            Bring to the table win-win survival strategies to ensure proactive domination...
+          </div>
         </div>
 
-        <div className="row clearfix">
-{
-            services.map((service) => (
-                <ServiceCard key={service.service_id} service={service} />
-            ))
-}
-<AddService/>
+        {/* Alerts */}
+        {success && <div className="alert alert-success">{success}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
+        {serverError && <div className="alert alert-danger">{serverError}</div>}
 
-        
-      </div>
+        <div className="row clearfix">
+          {services.map((service) => (
+            <ServiceCard
+              key={service.service_id}
+              service={service}
+              handleDelete={handleDelete}
+              handleEditClick={handleEditClick}
+            />
+          ))}
+          <AddService />
+        </div>
+
+        {/* Edit Modal */}
+        <EditServiceModal
+          show={showEditModal}
+          onHide={() => setShowEditModal(false)}
+          service={selectedService}
+          onSave={handleSaveEdit}
+        />
       </div>
     </section>
   );

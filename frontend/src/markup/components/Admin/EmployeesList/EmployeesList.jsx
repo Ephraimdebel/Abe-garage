@@ -20,11 +20,32 @@ const EmployeesList = () => {
   // A state to store the error message 
   const [apiErrorMessage, setApiErrorMessage] = useState(null);
   // To get the logged in employee token
+  const [success,setSuccess] = useState("")
+
+  const [error,setError] = useState("")
+
   const { employee } = useAuth();
   let token = null; // To store the token 
   if (employee) {
     token = employee.employee_token;
   }
+
+  const handleDelete = (id) => {
+    const confirm = window.confirm("Are you sure you want to delete this employee?");
+    if (!confirm) return;
+  
+    employeeService.DeleteEmployee(id, token)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success) {
+          setSuccess("Employee Deleted successfully");
+          setEmployees(prev => prev.filter(emp => emp.employee_id !== id));
+        } else {
+          setError("Something went wrong");
+        }
+      });
+  };
+  
 
   useEffect(() => {
     // Call the getAllEmployees function 
@@ -50,6 +71,8 @@ const EmployeesList = () => {
     }).catch((err) => {
       // console.log(err);
     })
+
+
   }, []);
 
   return (
@@ -98,9 +121,11 @@ const EmployeesList = () => {
                                          <FaRegEdit className="text-dark cursor-pointer mr-2" size={18} />
                                    
                                     </a>
-                    
-                                    <a href={`/admin/employee/${employee.employee_id}`}>
+                  
+                                    <a  >
+                                      <a onClick={()=>handleDelete(employee.employee_id)} >
                                      <FaTrashAlt className="text-danger cursor-pointer" size={18} />
+                                      </a>
                                     </a>
                       </td>
                     </tr>
