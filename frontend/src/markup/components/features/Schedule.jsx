@@ -11,7 +11,7 @@ function Schedule() {
             </div>
             <div className="right-column">
                 <div className="phone">1800.456.7890</div>
-                <div className="btn"><a href="#" className="theme-btn btn-style-one"><span>Appointment</span><i
+                <div className="btn"><a href="/contact" className="theme-btn btn-style-one"><span>Appointment</span><i
                             className="flaticon-right"></i></a></div>
             </div>
         </div>

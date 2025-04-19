@@ -12,11 +12,11 @@ router.post("/api/employee",  employeeController.createEmployee);
 router.get("/api/employees", employeeController.getAllEmployees);
 // 
 
-router.get("/api/employee/:id", employeeController.getEmployeeById);
+router.get("/api/employee/:id", [authMiddleware.verifyToken],employeeController.getEmployeeById);
 
-router.patch("/api/employee/:id", employeeController.updateEmployee);
+router.patch("/api/employee/:id",[authMiddleware.verifyToken, authMiddleware.isAdmin], employeeController.updateEmployee);
 
-router.delete("/api/employee/:id", employeeController.deleteEmployee);
+router.delete("/api/employee/:id",[authMiddleware.verifyToken, authMiddleware.isAdmin], employeeController.deleteEmployee);
 
 // [authMiddleware.verifyToken, authMiddleware.isAdmin],
 // Export the router

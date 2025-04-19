@@ -12,7 +12,7 @@ const NewOrders = () => {
   const [serverError, setServerError] = useState('');
 
   const { employee } = useAuth();
-  const loggedInEmployeeToken = employee?.employee_token || '';
+  const loggedInEmployeeToken = employee?.employee_token;
 
   const navigator = useNavigate()
 
@@ -26,26 +26,31 @@ const handleRowClick = (customerId) => {
 };
 
 
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const response = await createCustomer.getAllCustomer(loggedInEmployeeToken);
-        const data = await response.json();
-        console.log("Fetched customers:", data?.customers);
-        if (!data) {
-          setServerError(data.error);
-        } else {
-          setCustomers(data?.customers || []);
-          setFilteredCustomers(data?.customers || []);
-        }
-      } catch (err) {
-        console.log(err);
-        setServerError("Failed to fetch customers.");
-      }
-    };
+useEffect(() => {
+  //  Only run fetch if token exists
+  if (!loggedInEmployeeToken) return;
 
-    fetchCustomers();
-  }, [searchTerm]);
+  const fetchCustomers = async () => {
+    try {
+      const response = await createCustomer.getAllCustomer(loggedInEmployeeToken);
+      const data = await response.json(); // This depends on how your service works
+      console.log("Fetched customers:", data?.customers);
+
+      if (!data || data.error) {
+        setServerError(data?.error || "Unexpected error");
+      } else {
+        setCustomers(data.customers || []);
+        setFilteredCustomers(data.customers || []);
+      }
+    } catch (err) {
+      console.log(err);
+      setServerError("Failed to fetch customers.");
+    }
+  };
+
+  fetchCustomers();
+}, [loggedInEmployeeToken]);
+
   
   
   // Filter customers when search term changes

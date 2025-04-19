@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 import { FaRegEdit, FaTrashAlt } from "react-icons/fa";
-const OrderServiceCard = ({service}) => {
+const OrderServiceCard = ({service,singleOrder}) => {
   console.log("serv- ",service)
     return (
 <Card className="shadow-sm my-1 w-100">
@@ -15,7 +15,19 @@ const OrderServiceCard = ({service}) => {
     </Card.Title>
     <div className="">
         
-    <div className="badge rounded-pill bg-warning text-dark p-2">in progress</div>
+    <div c className={`badge rounded-pill ${
+                      singleOrder.order_status === 2
+                        ? "bg-success text-white"
+                        : singleOrder.order_status === 1
+                        ? "bg-warning text-dark"
+                        : "bg-dark text-white"
+                    }`}
+                  >
+                    {singleOrder.order_status === 2
+                      ? "Completed"
+                      : singleOrder.order_status === 1
+                      ? "In Progress"
+                      : "Received"}</div>
     </div>
   </div>
   <Card.Text className="text-muted mt-2">

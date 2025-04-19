@@ -17,19 +17,20 @@ const creatOrder = async (formData,loggedInEmployeeToken) => {
 
 }
 
-const getAllOrders = async(loggedInEmployeeToken) =>{
+const getAllOrders = async(token) =>{
     const requestOption = {
         method:'GET',
         headers:{
             'Content-Type':'applications/json',
-            'x-access-token' : loggedInEmployeeToken
-        },
+            'x-access-token' : token
+        }
     
     }
 
     const response = await fetch(`${api_url}/api/orders`,requestOption)
-    return response
-}      
+    return response;
+}   
+
 const getOrderById = async(id,loggedInEmployeeToken)=>{
     const requestOption = {
         method:'GET',
@@ -42,10 +43,38 @@ const getOrderById = async(id,loggedInEmployeeToken)=>{
     const response = await fetch(`${api_url}/api/order/${id}`,requestOption)
     return response
 }
+
+async function updateOrderStatus(orderId, newStatus, token) {
+    return fetch(`${api_url}/api/order/${orderId}/status`, {
+      method: "put",
+      headers: {
+        "Content-Type": "application/json",
+        'x-access-token' : token
+      },
+      body: JSON.stringify({ order_status: newStatus }),
+    });
+  }
+
+async function deleteOrder(id,token){
+    const requestOption = {
+        method: 'DELETE',
+        headers : {
+            'Content-Type':'application/json',
+            'x-access-token':token
+        }
+    }
+
+    const response = await fetch(`${api_url}/api/order/${id}`,requestOption)
+
+    return response
+}
+  
 const orderService = {
     creatOrder,
     getAllOrders,
-    getOrderById
+    getOrderById,
+    updateOrderStatus,
+    deleteOrder
 }
 
 export default orderService

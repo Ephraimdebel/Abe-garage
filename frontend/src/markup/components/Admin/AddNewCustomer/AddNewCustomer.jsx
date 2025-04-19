@@ -80,8 +80,8 @@ function AddNewCustomer(props) {
           // Redirect to the customers page after 2 seconds 
           // For now, just redirect to the home page 
           setTimeout(() => {
-            // window.location.href = '/admin/customers';
-            window.location.href = '/';
+            window.location.href = '/admin/customers';
+            // window.location.href = '/';
           }, 2000);
         }
       })

@@ -11,7 +11,7 @@ import ServiceCard from '../../ServiceLIst/ServiceCard';
 import AddService from '../AddService/AddService';
 import AdditionalRequests from '../AdditionalRequests/AdditionalRequests';
 
-const NewOrdersThree = ({id}) => {
+const NewOrdersThree = ({customer_id,vehicle_id}) => {
     const [customers, setCustomers] = useState([]);
     const [vehicles, setVehicle] = useState([]);
      const [services, setServices] = useState([]);
@@ -21,15 +21,18 @@ const NewOrdersThree = ({id}) => {
     let loggedInEmployeeToken = "";
     // Destructure the auth hook and get the token
     const { employee } = useAuth();
-    if (employee && employee.employee_token) {
-      loggedInEmployeeToken = employee.employee_token;
-    }
+    
     useEffect(() => {
+      if (employee && employee.employee_token) {
+        loggedInEmployeeToken = employee.employee_token;
+      }else{
+        return
+      }
       const customerslist = createCustomer
-        .getSingleCustomer(id,loggedInEmployeeToken)
+        .getSingleCustomer(customer_id,loggedInEmployeeToken)
         .then((response) => response.json())
         .then((data) => {
-          // console.log("here -> ",data);
+          console.log("here -> ",data);
           // If Error is returned from the API server, set the error message
           if (!data) {
             setServerError("data error");
@@ -43,10 +46,10 @@ const NewOrdersThree = ({id}) => {
         });
 
         const vehiclelist = vehicleService
-              .getVehicle(loggedInEmployeeToken, id)
+              .getVehicle(loggedInEmployeeToken, vehicle_id)
               .then((response) => response.json())
               .then((data) => {
-                console.log("here -> ",data.data);
+                // console.log("here -> ",data.data);
                 // If Error is returned from the API server, set the error message
                 if (!data) {
                   setServerError("data error");
@@ -72,7 +75,7 @@ const NewOrdersThree = ({id}) => {
             //     console.log(err);
             //   }
             // );
-    },[])
+    },[employee])
 
     return (
         <section className="contact-section pl-0" >
@@ -161,7 +164,7 @@ const NewOrdersThree = ({id}) => {
                 <ServiceCard key={service.service_id} service={service} />
             ))
 } */}
-<AdditionalRequests customer_id = {id} vehicle_id = {vehicles.vehicle_id}/>
+<AdditionalRequests customer_id = {customer_id} vehicle_id = {vehicles.vehicle_id}/>
 
         
       </div>

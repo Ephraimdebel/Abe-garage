@@ -5,7 +5,8 @@ import { useParams } from "react-router";
 import NewOrdersThree from "../../components/Admin/Orders/NewOrderThree";
 
 const OrdersThree = () => {
-    const {id} =  useParams()
+    const {c_id,v_id} =  useParams()
+    console.log(c_id,v_id)
   return (
 <div>
     <div className="container-fluid admin-pages">
@@ -14,7 +15,7 @@ const OrdersThree = () => {
           <AdminMenu />
         </div>
         <div className="col-md-9 admin-right-side">
-          <NewOrdersThree id = {id}/> 
+          <NewOrdersThree customer_id = {c_id} vehicle_id = {v_id}/> 
         </div>
       </div>
     </div>

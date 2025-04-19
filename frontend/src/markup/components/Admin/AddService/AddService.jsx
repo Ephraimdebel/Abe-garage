@@ -1,46 +1,50 @@
 import React from 'react'
 import serviceServices from '../../../../services/service.service';
+import { useAuth } from "../../../../Contexts/AuthContext";
+
 
 const AddService = () => {
     const [service_name, setServiceName] = React.useState("");
     const [service_description, setServiceDescription] = React.useState("");
     const [error,setError] = React.useState("")
     const [success,setSuccess] = React.useState("")
-    const handleSubmit = (e) =>{
-        e.preventDefault();
-        let valid = true
-        if (!service_name || !service_description){
-            setError("all fields are required")
-            valid = false
-        }
-        if (!valid){
-            return
-        }
+    const { employee } = useAuth();
 
-        const formData={
-            service_name,
-            service_description
-        }
 
-        const newservice = serviceServices.createService(formData).then((response) => response.json()).then((data) => {
-            // If Error is returned from the API server, set the error message
-            if (!data) {
-              setError(data.error)
-            } else {
-              // Handle successful response
-              console.log(data);
-                setServiceName("");
-                setServiceDescription("");
-                setError("");
-                setSuccess("Service added successfully");
-            }
-          }
-        ).catch((err) => {
-            console.log(err);
-          }
-        );
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError(""); // reset on each submit
+  setSuccess("");
 
+  if (!service_name || !service_description) {
+    setError("All fields are required");
+    return;
+  }
+
+  const formData = {
+    service_name,
+    service_description,
+  };
+
+  try {
+    const token = employee?.employee_token;
+    const response = await serviceServices.createService(formData, token);
+    const data = await response.json();
+
+    if (data?.error) {
+      setError(data.error);
+    } else {
+      console.log("Service Created:", data);
+      setServiceName("");
+      setServiceDescription("");
+      setSuccess("Service added successfully");
     }
+  } catch (err) {
+    console.error(err);
+    setError("Something went wrong while adding the service.");
+  }
+};
+
   return (
     <section class="contact-section pl-5 mt-3" style={{backgroundColor: "#ffff"}}>
     <div class="auto-container " >

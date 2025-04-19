@@ -7,15 +7,16 @@ import LoginForm from '../../components/LoginForm/LoginForm';
 import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
 // Import the EmployeesList component 
 import EmployeesList from "../../components/Admin/EmployeesList/EmployeesList";
+import Unauthorized from "../Unauthorized";
 function Employees() {
   // Destructure the auth hook 
-  const { isLogged, isAdmin } = useAuth();
+  const { isLogged, isAdmin,isManager } = useAuth();
 
   if (isLogged) {
 
-    console.log("Kebede");
+    // console.log("Kebede");
 
-    if (true) {
+    if (isManager || isAdmin) {
       return (
         <div>
           <div className="container-fluid admin-pages">
@@ -33,7 +34,7 @@ function Employees() {
     } else {
       return (
         <div>
-          <h1>You are not authorized to access this page</h1>
+          <Unauthorized />
         </div>
       );
     }

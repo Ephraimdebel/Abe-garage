@@ -33,6 +33,11 @@ const AddVehicle = ({ id }) => {
     loggedInEmployeeToken = employee.employee_token;
   }
   useEffect(() => {
+    if (employee && employee.employee_token) {
+      loggedInEmployeeToken = employee.employee_token;
+    }else{
+      return
+    }
     const customerslist = createCustomer
       .getSingleCustomer(id,loggedInEmployeeToken)
       .then((response) => response.json())
@@ -66,7 +71,7 @@ const vehiclelist = vehicleService
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [employee]);
 
 
   const handleSubmit = (e) => {
@@ -110,8 +115,8 @@ const vehiclelist = vehicleService
           // Redirect to the customers page after 2 seconds 
           // For now, just redirect to the home page 
           setTimeout(() => {
-            // window.location.href = '/admin/customers';
-            window.location.href = '/';
+            window.location.href = `/admin/customers/${id}`;
+            // window.location.href = '/';
           }, 2000);
         }
       })

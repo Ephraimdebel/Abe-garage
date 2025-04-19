@@ -11,8 +11,11 @@ import { FaEdit, FaRegEdit, FaTrashAlt } from "react-icons/fa";
 import { MdAdsClick } from "react-icons/md";
 
 // Create the EmployeesList component 
+
 const EmployeesList = () => {
+
   // Create all the states we need to store the data
+
   // Create the employees state to store the employees data  
   const [employees, setEmployees] = useState([]);
   // A state to serve as a flag to show the error message 
@@ -22,6 +25,7 @@ const EmployeesList = () => {
   // To get the logged in employee token
   const [success,setSuccess] = useState("")
 
+  
   const [error,setError] = useState("")
 
   const { employee } = useAuth();
@@ -124,7 +128,7 @@ const EmployeesList = () => {
                   
                                     <a  >
                                       <a onClick={()=>handleDelete(employee.employee_id)} >
-                                     <FaTrashAlt className="text-danger cursor-pointer" size={18} />
+                                     <FaTrashAlt className="text-danger cursor-pointer " size={18} />
                                       </a>
                                     </a>
                       </td>

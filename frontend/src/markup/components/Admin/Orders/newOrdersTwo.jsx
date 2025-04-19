@@ -8,6 +8,7 @@ import { MdAdsClick } from 'react-icons/md';
 import { useNavigate } from "react-router";
 
 const NewOrdersTwo = ({id}) => {
+  console.log("oder two page")
     const [customers, setCustomers] = useState([]);
     const [vehicles, setVehicle] = useState([]);
 
@@ -17,14 +18,19 @@ const NewOrdersTwo = ({id}) => {
     let loggedInEmployeeToken = "";
     // Destructure the auth hook and get the token
     const { employee } = useAuth();
-    if (employee && employee.employee_token) {
-      loggedInEmployeeToken = employee.employee_token;
-    }
+   
 
-    const handleRowClick = (id)=>{
-        navigator(`/admin/ordersthree/${id}`);
+    const handleRowClick = (customer_id,vehicle_id)=>{
+      console.log("curmer",customer_id,vehicle_id)
+      navigator(`/admin/ordersthree/${customer_id}/${vehicle_id}`);
+
     }
     useEffect(() => {
+      if (employee && employee.employee_token) {
+        loggedInEmployeeToken = employee.employee_token;
+      }else{
+        return
+      }
       const customerslist = createCustomer
         .getSingleCustomer(id,loggedInEmployeeToken)
         .then((response) => response.json())
@@ -58,7 +64,7 @@ const NewOrdersTwo = ({id}) => {
               .catch((err) => {
                 console.log(err);
               });
-    },[])
+    },[employee])
 
     return (
         <section className="contact-section" >
@@ -139,12 +145,12 @@ const NewOrdersTwo = ({id}) => {
                                               <td>{employee.vehicle_tag}</td>
                                               <td>{employee.vehicle_color}</td>
                                               <td>
-                                                 <a href={`/admin/ordersthree/${employee.vehicle_id}`}>
+                                                 
                                                                   <Button variant="outline" size="sm">
-                                                                  <MdAdsClick onClick={()=>handleRowClick(employee.vehicle_id)}/>
+                                                                  <MdAdsClick onClick={()=>handleRowClick(id,employee.vehicle_id)}/>
                                                                   
                                                                   </Button>
-                                                                </a>
+                                                                
                                                  </td>
                                             </tr>
                                           ))

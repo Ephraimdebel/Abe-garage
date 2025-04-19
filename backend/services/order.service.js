@@ -6,26 +6,29 @@ const addOrder = async (orderData) => {
     customer_id,
     vehicle_id,
     order_description,
-    // estimated_completion_date,
-    // completion_date,
-    // order_completed,
     order_services,
   } = orderData;
 
   try {
-    // Begin transaction (uncomment for production)
-    // await connection.beginTransaction();
-
-    // Insert into orders table
+    // Insert into orders table with UUID
     const orderResult = await conn.query(
       `INSERT INTO orders (employee_id, customer_id, vehicle_id, active_order, order_hash) 
        VALUES (?, ?, ?, ?, UUID())`,
       [employee_id, customer_id, vehicle_id, 0]
     );
+
     if (orderResult.affectedRows === 0) {
       throw new Error("Failed to create order");
     }
+
     const order_id = orderResult.insertId;
+
+    // Retrieve order_hash using the new order_id
+    const [orderHashRow] = await conn.query(
+      `SELECT order_hash FROM orders WHERE order_id = ?`,
+      [order_id]
+    );
+    const order_hash = orderHashRow?.order_hash;
 
     // Insert into order_info table
     await conn.query(
@@ -33,13 +36,7 @@ const addOrder = async (orderData) => {
        VALUES (?, ?, ?, ?, ?, ?)`,
       [order_id, 0, order_description || null, null, null, 0]
     );
-    // order_description
-    /*
-        await conn.query(
-      `INSERT INTO order_info (order_id, order_total_price, estimated_completion_date, completion_date, additional_request, notes_for_internal_use, notes_for_customer, additional_requests_completed) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [order_id, 0, estimated_completion_date, completion_date, order_description, null, null, order_completed]
-    );*/
+
     // Insert into order_services table
     for (const service_id of order_services) {
       await conn.query(
@@ -48,20 +45,28 @@ const addOrder = async (orderData) => {
       );
     }
 
-    // Insert into order_status table (assuming a default status of 0 for a new order)
+    // Insert into order_status table
     await conn.query(
       `INSERT INTO order_status (order_id, order_status) VALUES (?, ?)`,
-      [order_id, 0] // 0 represents a new order status (you can adjust this as needed)
+      [order_id, 0]
     );
 
-    // Commit transaction (uncomment for production)
-    // await connection.commit();
+    // Fetch customer email
+    const [customerRow] = await conn.query(
+      `SELECT customer_email FROM customer_identifier WHERE customer_id = ?`,
+      [customer_id]
+    );
+    const customer_email = customerRow?.customer_email;
 
-    return { success: true, order_id };
+    return {
+      success: true,
+      order_id,
+      order_hash,
+      customer_email
+    };
+
   } catch (error) {
-    // Rollback transaction in case of an error (uncomment for production)
-    // await connection.rollback();
-    console.log("error" , error)
+    console.log("error", error);
     throw error;
   }
 };
@@ -159,10 +164,10 @@ ORDER BY o.order_id DESC;
 //   }
 // };
 
-const getOrderById = async (orderId) => {
+const getOrderByHash = async (orderHash) => {
   try {
-    // Fetch full order with customer and vehicle info
-    const order = await conn.query(
+    // Fetch full order with customer and vehicle info using order_hash
+    const orderResult = await conn.query(
       `
       SELECT 
         o.order_id,
@@ -195,33 +200,38 @@ const getOrderById = async (orderId) => {
       LEFT JOIN customer_identifier cid ON o.customer_id = cid.customer_id
       LEFT JOIN customer_info ci ON cid.customer_id = ci.customer_id
       LEFT JOIN customer_vehicle_info v ON o.vehicle_id = v.vehicle_id
-      WHERE o.order_id = ?
+      WHERE o.order_hash = ?
       `,
-      [orderId]
+      [orderHash]
     );
 
+    const order = orderResult; // assuming conn.query returns [rows, fields]
+// console.log(order)
     if (!order) return null;
 
     // Get all services related to this order
-    const services = await conn.query(
+    const servicesResult = await conn.query(
       `
       SELECT cs.service_name
       FROM order_services os
       LEFT JOIN common_services cs ON os.service_id = cs.service_id
       WHERE os.order_id = ?
       `,
-      [orderId]
+      [order[0].order_id] // still use order_id here to fetch services
     );
+
+    const services = servicesResult.map((s) => s.service_name);
 
     return {
       ...order,
-      services: services.map((s) => s.service_name)
+      services,
     };
   } catch (error) {
-    console.error("Error in getOrderById:", error);
+    console.error("Error in getOrderByHash:", error);
     throw error;
   }
 };
+
 
 const updateOrder = async (orderId, updateData) => {
   try {
@@ -232,7 +242,7 @@ const updateOrder = async (orderId, updateData) => {
     let orderInfoValues = [];
 
     let orderStatusUpdateFields = [];
-    let orderStatusValues = [];
+    let orderStatusValues = [];orderStatusUpdateFields
     // Helper function to safely handle undefined values
     const safeValue = (value) => (value !== undefined ? value : null);
 
@@ -321,9 +331,61 @@ if (updateData.order_status !== undefined) {
   }
 };
 
+
+const updateOrderStatus = async (order_id, order_status) => {
+  try {
+    const response = await conn.query(
+      `UPDATE order_status SET order_status = ? WHERE order_id = ?`,
+      [order_status, order_id]
+    );
+    return response;
+  } catch (err) {
+    console.error("Error updating order status:", err);
+    throw err;
+  }
+};
+
+
+// await conn.query(
+//   `UPDATE order_status SET ${orderStatusUpdateFields.join(", ")} WHERE order_id = ?`,
+//   orderStatusValues
+// );
+
+const deleteOrder = async (order_id) => {
+  try {
+    // Delete from order_services first due to foreign key constraints
+    await conn.query(`DELETE FROM order_services WHERE order_id = ?`, [order_id]);
+
+    // Delete from order_status
+    await conn.query(`DELETE FROM order_status WHERE order_id = ?`, [order_id]);
+
+    // Delete from order_info
+    await conn.query(`DELETE FROM order_info WHERE order_id = ?`, [order_id]);
+
+    // Finally, delete from orders table
+    const result = await conn.query(`DELETE FROM orders WHERE order_id = ?`, [order_id]);
+
+    if (result.affectedRows === 0) {
+      throw new Error("No order found to delete.");
+    }
+
+    return {
+      success: true,
+      message: "Order deleted successfully"
+    };
+  } catch (error) {
+    console.error("Error deleting order:", error);
+    throw error;
+  }
+};
+
+
 module.exports = {
   addOrder,
   getAllOrders,
-  getOrderById,
-  updateOrder
+  // getOrderById,
+  updateOrder,
+  updateOrderStatus,
+  getOrderByHash,
+  deleteOrder
 };

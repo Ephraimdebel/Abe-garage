@@ -7,11 +7,12 @@ import logo from '../../../assets/images/logo.png';
 import loginService from '../../../services/login.service';
 // Import the custom context hook 
 import { useAuth } from '../../../Contexts/AuthContext';
+import TrackOrderModal from '../TrackOrder/TrackOrder';
 
 
 function Header(props) {
   // Use the custom hook to access the data in the context 
-  const { isLogged,isAdmin, setIsLogged, employee } = useAuth();
+  const { isLogged,isAdmin,isManager, setIsLogged, employee } = useAuth();
   // console.log(useAuth());
 
   // Log out event handler function
@@ -65,8 +66,18 @@ function Header(props) {
                         <li className="dropdown"><a href="/service">Services</a>
                         </li>
                         <li><a href="/contact">Contact Us</a></li>
+                        <li >
+                        <a
+
+    data-bs-toggle="modal"
+    data-bs-target="#trackOrderModal"
+    style={{ cursor: 'pointer' }}
+  >
+    Track Order
+  </a>
+  </li>
                         {
-                          isAdmin && isLogged ?
+                          (isAdmin || isManager) && isLogged ?
                         (<li><a href="/admin">Admin</a></li>):("")
                         }
                       </ul>
@@ -131,6 +142,7 @@ function Header(props) {
           <div className="cursor-follower"></div>
         </div>
       </header>
+      <TrackOrderModal modalId="trackOrderModal" />
     </div>
   );
 }
