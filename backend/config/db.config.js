@@ -7,7 +7,7 @@ const dbConfig = {
   password: process.env.DB_PASS,
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
+  database:  process.env.DB_NAME,
 }
 // Create the connection pool  
 const pool = mysql.createPool(dbConfig);
