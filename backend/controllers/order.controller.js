@@ -51,7 +51,7 @@ const getAllOrders = async (req, res) => {
         return res.status(404).json({ success: false, message: "Order not found" });
       }
   
-      res.json(order);
+      res.json({success : true , order :order});
     } catch (error) {
       console.error("Error fetching order:", error);
       res.status(500).json({ success: false, message: "Internal Server Error" });

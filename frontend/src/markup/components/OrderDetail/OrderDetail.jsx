@@ -17,26 +17,34 @@ function OrderDetail() {
     // const {employee} = useAuth()
 
     useEffect(()=>{
+try{
+
 
       setIsLoading(true)
-        const singleOrder = orderService.getOrderById(id).then((response)=>response.json()).then((data)=>{
-            console.log("data",data[0])
-            // console.log(data)
-            if (!data){
 
+        const singleOrder = orderService.getOrderById(id).then((response)=>response.json()).then((data)=>{
+            console.log("data",data)
+            // console.log(data)
+            if (!data.success){
+
+              console.log("first")
                 setError('invalid request')
                 setIsLoading(false)
 
             }else{
-                setServices(data?.services)
-                setSingleOrder(data[0])
+                setServices(data?.order?.services)
+                setSingleOrder(data?.order[0])
                 setIsLoading(false)
 
 
             }
         })
-    },[])
 
+      }catch(err){
+        setError('invalid error')
+        setIsLoading(false)
+      }
+    },[])
 
     return (
       <>
