@@ -17,9 +17,9 @@ function OrderDetail() {
     useEffect(()=>{
    
         const singleOrder = orderService.getOrderById(id).then((response)=>response.json()).then((data)=>{
-            console.log("data",data)
+            console.log("data",data[0])
             // console.log(data)
-            if (!data.success){
+            if (!data){
 
                 setError('invalid request')
             }else{
