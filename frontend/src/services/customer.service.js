@@ -17,13 +17,13 @@ const createCustomer = async (formData, loggedInEmployeeToken) => {
 }
 
 // A function to send get request to get all employees
-const getAllCustomer = async (loggedInEmployeeToken) => {
+const getAllCustomer = async (token) => {
   // console.log(token);
   const requestOptions = {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'x-access-token': loggedInEmployeeToken
+      'x-access-token': token
     }
   };
   const response = await fetch(`${api_url}/api/customer`, requestOptions);

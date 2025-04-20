@@ -4,12 +4,15 @@ import createCustomer from '../../../../services/customer.service';
 import { useAuth } from "../../../../Contexts/AuthContext";
 import { format } from "date-fns";
 import { useNavigate } from "react-router";
+import Loader from "../../Loader/Loader";
 
 const NewOrders = () => {
   const [customers, setCustomers] = useState([]);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [serverError, setServerError] = useState('');
+    const [isLoading,setIsLoading] = useState(false)
+
 
   const { employee } = useAuth();
   const loggedInEmployeeToken = employee?.employee_token;
@@ -32,19 +35,27 @@ useEffect(() => {
 
   const fetchCustomers = async () => {
     try {
+      setIsLoading(true)
+
       const response = await createCustomer.getAllCustomer(loggedInEmployeeToken);
       const data = await response.json(); // This depends on how your service works
       console.log("Fetched customers:", data?.customers);
 
       if (!data || data.error) {
         setServerError(data?.error || "Unexpected error");
+        setIsLoading(false)
+
       } else {
         setCustomers(data.customers || []);
         setFilteredCustomers(data.customers || []);
+        setIsLoading(false)
+
       }
     } catch (err) {
       console.log(err);
       setServerError("Failed to fetch customers.");
+      setIsLoading(false)
+
     }
   };
 
@@ -67,6 +78,10 @@ useEffect(() => {
   }, [searchTerm,customers]);
 
   return (
+    <>
+    {
+      isLoading ? (<Loader />):(
+
     <section className="contact-section">
       <div className="auto-container">
         <div className="contact-title">
@@ -127,6 +142,9 @@ useEffect(() => {
         </div>
       </div>
     </section>
+      )
+    }
+    </>
   );
 };
 

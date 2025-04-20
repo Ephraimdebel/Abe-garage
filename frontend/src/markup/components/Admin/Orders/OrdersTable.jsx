@@ -4,6 +4,7 @@ import orderService from "../../../../services/order.service";
 import { useAuth } from "../../../../Contexts/AuthContext";
 import { FaRegEdit, FaTrashAlt } from "react-icons/fa";
 import { Modal, Button, Form } from "react-bootstrap";
+import Loader from "../../Loader/Loader";
 
 export default function OrdersTable() {
   const [orders, setOrders] = useState([]);
@@ -12,6 +13,8 @@ export default function OrdersTable() {
   const [showModal, setShowModal] = useState(false);
   const [newStatus, setNewStatus] = useState("");
   const [success,setSuccess] = useState("")
+  const [isLoading,setIsLoading] = useState(false)
+  
 
   
   const { employee } = useAuth();
@@ -32,9 +35,13 @@ export default function OrdersTable() {
   
 
   const fetchOrders = () => {
+    setIsLoading(true)
     const token = employee?.employee_token;
+
     if (!token) {
       console.warn("Token is not available yet.");
+      setIsLoading(false)
+
       return;
     }
   console.log("first")
@@ -44,11 +51,19 @@ export default function OrdersTable() {
       .then((data) => {
         if (!data) {
           setError("Internal server error");
+          setIsLoading(false)
+
         } else {
           setOrders(data);
+          setIsLoading(false)
+
         }
       })
-      .catch(() => setError("Failed to fetch orders"));
+      .catch(() =>{
+        setError("Failed to fetch orders")
+        setIsLoading(false)
+  });
+
   };
   
 
@@ -100,6 +115,10 @@ export default function OrdersTable() {
   console.log(orders)
 
   return (
+    <>
+    {
+      isLoading ? (<Loader />):(
+
     <section className="contact-section">
       <div className="auto-container table-responsive" style={{ overflowX: "auto" }}>
         <div className="contact-title">
@@ -212,5 +231,8 @@ export default function OrdersTable() {
         </Modal>
       </div>
     </section>
+      )
+    }
+    </>
   );
 }

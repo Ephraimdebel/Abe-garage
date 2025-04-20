@@ -3,6 +3,7 @@ import OrderServiceCard from './OrderServiceCard'
 import orderService from '../../../services/order.service'
 // import { useAuth } from '../../../Contexts/AuthContext'
 import { useParams } from 'react-router'
+import Loader from '../Loader/Loader'
 
 function OrderDetail() {
     const {id} = useParams()
@@ -10,55 +11,62 @@ function OrderDetail() {
     const [singleOrder,setSingleOrder] = useState("")
     const [services,setServices] = useState([])
     const [error,setError] = useState("")
+    const [isLoading,setIsLoading] = useState(false)
 
 
     // const {employee} = useAuth()
 
     useEffect(()=>{
-   
+
+      setIsLoading(true)
         const singleOrder = orderService.getOrderById(id).then((response)=>response.json()).then((data)=>{
             console.log("data",data[0])
             // console.log(data)
             if (!data){
 
                 setError('invalid request')
+                setIsLoading(false)
+
             }else{
                 setServices(data?.services)
                 setSingleOrder(data[0])
+                setIsLoading(false)
+
 
             }
         })
     },[])
-    if (error){
-        return (
-            <section className="services-section">
-            <div className="auto-container text-center py-5">
-              <div className="sec-title style-two">
-                <h2 className="text-danger">Order Not Found</h2>
-                <p className="text-muted">
-                  We couldn’t locate the order you're looking for. It might have been removed or the link is incorrect.
-                </p>
-              </div>
-              <div className="mt-4">
-                {/* <img
-                  src="/images/not-found-illustration.svg" // Replace with your image path
-                  alt="Order Not Found"
-                  style={{ maxWidth: '300px', marginBottom: '20px' }}
-                /> */}
-                <div>
-                  <a href="/" className="btn btn-primary">
-                    Back to home
-                  </a>
+
+
+    return (
+      <>
+      {
+        isLoading ? (<Loader />):(
+            error ? (
+              <section className="services-section">
+              <div className="auto-container text-center py-5">
+                <div className="sec-title style-two">
+                  <h2 className="text-danger">Order Not Found</h2>
+                  <p className="text-muted">
+                    We couldn’t locate the order you're looking for. It might have been removed or the link is incorrect.
+                  </p>
+                </div>
+                <div className="mt-4">
+                  {/* <img
+                    src="/images/not-found-illustration.svg" // Replace with your image path
+                    alt="Order Not Found"
+                    style={{ maxWidth: '300px', marginBottom: '20px' }}
+                  /> */}
+                  <div>
+                    <a href="/" className="btn btn-primary">
+                      Back to home
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
-        )
-    }
-    else{
-
-        return (
-          <section className="services-section">
+            </section>
+            ):(
+<section className="services-section">
           <div className="auto-container">
           <div class="sec-title style-two">
         <div class="d-flex justify-content-between align-items-center">
@@ -122,8 +130,12 @@ function OrderDetail() {
               </div>
           </div>
       </section>
+            )
         )
-    }
-}
+      }
+      </>
+    )
+  }
+  
 
 export default OrderDetail

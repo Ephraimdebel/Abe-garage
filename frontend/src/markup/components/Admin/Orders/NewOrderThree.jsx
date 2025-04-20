@@ -10,6 +10,7 @@ import serviceServices from '../../../../services/service.service';
 import ServiceCard from '../../ServiceLIst/ServiceCard';
 import AddService from '../AddService/AddService';
 import AdditionalRequests from '../AdditionalRequests/AdditionalRequests';
+import Loader from '../../Loader/Loader';
 
 const NewOrdersThree = ({customer_id,vehicle_id}) => {
     const [customers, setCustomers] = useState([]);
@@ -17,6 +18,8 @@ const NewOrdersThree = ({customer_id,vehicle_id}) => {
      const [services, setServices] = useState([]);
 
     const [serverError, setServerError] = useState("");
+    const [isLoading,setIsLoading] = useState(false)
+    
 
     let loggedInEmployeeToken = "";
     // Destructure the auth hook and get the token
@@ -28,38 +31,48 @@ const NewOrdersThree = ({customer_id,vehicle_id}) => {
       }else{
         return
       }
+      setIsLoading(true)
       const customerslist = createCustomer
         .getSingleCustomer(customer_id,loggedInEmployeeToken)
         .then((response) => response.json())
         .then((data) => {
           console.log("here -> ",data);
+          setIsLoading(false)
           // If Error is returned from the API server, set the error message
           if (!data) {
             setServerError("data error");
+            setIsLoading(false)
           } else {
             // Handle successful response
             setCustomers(data);
+            setIsLoading(false)
           }
         })
         .catch((err) => {
           console.log(err);
+          setIsLoading(false)
         });
 
+        setIsLoading(true)
         const vehiclelist = vehicleService
               .getVehicle(loggedInEmployeeToken, vehicle_id)
               .then((response) => response.json())
               .then((data) => {
+                setIsLoading(false)
                 // console.log("here -> ",data.data);
                 // If Error is returned from the API server, set the error message
                 if (!data) {
                   setServerError("data error");
+                  setIsLoading(false)
                 } else {
                   // Handle successful response
                   setVehicle(data.data);
+                  setIsLoading(false)
                 }
               })
               .catch((err) => {
                 console.log(err);
+                setIsLoading(false)
               });
 
             //   const service = serviceServices.getAllServices(loggedInEmployeeToken).then((response) => response.json()).then((data) => {
@@ -78,6 +91,11 @@ const NewOrdersThree = ({customer_id,vehicle_id}) => {
     },[employee])
 
     return (
+      <>
+      
+      {
+        isLoading ?(<Loader />):(
+
         <section className="contact-section pl-0" >
            <div className="auto-container">
            <section class="history-section">
@@ -171,6 +189,9 @@ const NewOrdersThree = ({customer_id,vehicle_id}) => {
                   </section>
                   </div>
                     </section>
+        )
+}
+      </>
   )
 }
 

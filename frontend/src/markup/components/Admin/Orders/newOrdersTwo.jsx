@@ -6,11 +6,14 @@ import { Table, Button } from "react-bootstrap";
 import vehicleService from "../../../../services/vehicle.service";
 import { MdAdsClick } from 'react-icons/md';
 import { useNavigate } from "react-router";
+import Loader from '../../Loader/Loader';
 
 const NewOrdersTwo = ({id}) => {
   console.log("oder two page")
     const [customers, setCustomers] = useState([]);
     const [vehicles, setVehicle] = useState([]);
+    const [isLoading,setIsLoading] = useState(false)
+    
 
     const [serverError, setServerError] = useState("");
     const navigator = useNavigate()
@@ -31,6 +34,7 @@ const NewOrdersTwo = ({id}) => {
       }else{
         return
       }
+      setIsLoading(true)
       const customerslist = createCustomer
         .getSingleCustomer(id,loggedInEmployeeToken)
         .then((response) => response.json())
@@ -39,15 +43,19 @@ const NewOrdersTwo = ({id}) => {
           // If Error is returned from the API server, set the error message
           if (!data) {
             setServerError("data error");
+            setIsLoading(false)
           } else {
             // Handle successful response
+            setIsLoading(false)
             setCustomers(data);
           }
         })
         .catch((err) => {
           console.log(err);
+          setIsLoading(false)
         });
 
+        setIsLoading(true)
         const vehiclelist = vehicleService
               .getVehiclesByCustomer(loggedInEmployeeToken, id)
               .then((response) => response.json())
@@ -55,18 +63,24 @@ const NewOrdersTwo = ({id}) => {
                 console.log("here -> ",data);
                 // If Error is returned from the API server, set the error message
                 if (!data) {
+                  setIsLoading(false)
                   setServerError("data error");
                 } else {
                   // Handle successful response
                   setVehicle(data.vehicles);
+                  setIsLoading(false)
                 }
               })
               .catch((err) => {
                 console.log(err);
+                setIsLoading(false)
               });
     },[employee])
 
     return (
+      <>
+      {
+        isLoading ? (<Loader />):(
         <section className="contact-section" >
            <div className="auto-container">
            <section class="history-section">
@@ -170,6 +184,10 @@ const NewOrdersTwo = ({id}) => {
                   </section>
                   </div>
                   </section>
+
+        )
+      }
+      </>
   )
 }
 

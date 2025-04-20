@@ -9,6 +9,7 @@ import { format } from 'date-fns'; // To properly format the date on the table
 import employeeService from "../../../../services/employee.service";
 import { FaEdit, FaRegEdit, FaTrashAlt } from "react-icons/fa";
 import { MdAdsClick } from "react-icons/md";
+import Loader from "../../Loader/Loader";
 
 // Create the EmployeesList component 
 
@@ -25,6 +26,8 @@ const EmployeesList = () => {
   // To get the logged in employee token
   const [success,setSuccess] = useState("")
 
+  const [isLoading,setIsLoading] = useState(false)
+
   
   const [error,setError] = useState("")
 
@@ -38,6 +41,7 @@ const EmployeesList = () => {
     const confirm = window.confirm("Are you sure you want to delete this employee?");
     if (!confirm) return;
   
+
     employeeService.DeleteEmployee(id, token)
       .then((res) => res.json())
       .then((data) => {
@@ -53,27 +57,34 @@ const EmployeesList = () => {
 
   useEffect(() => {
     // Call the getAllEmployees function 
+    setIsLoading(true)
     const allEmployees = employeeService.getAllEmployees(token);
     allEmployees.then((res) => {
       if (!res.ok) {
         console.log(res.status);
         setApiError(true);
+        setIsLoading(false)
         if (res.status === 401) {
+          setIsLoading(false)
           setApiErrorMessage("Please login again");
         } else if (res.status === 403) {
           setApiErrorMessage("You are not authorized to view this page");
+          setIsLoading(false)
         } else {
           setApiErrorMessage("Please try again later");
+          setIsLoading(false)
         }
       }
       return res.json()
     }).then((data) => {
       if (data.data.length !== 0) {
         setEmployees(data.data)
+        setIsLoading(false)
       }
 
     }).catch((err) => {
       // console.log(err);
+      setIsLoading(false)
     })
 
 
@@ -81,65 +92,72 @@ const EmployeesList = () => {
 
   return (
     <>
-      {apiError ? (
-        <section className="contact-section">
-          <div className="auto-container">
-            <div className="contact-title">
-              <h2>{apiErrorMessage}</h2>
-            </div >
-          </div>
-        </section>
-      ) : (
-        <>
+      {
+      isLoading ? (<Loader />):(
+
+        apiError ? (
           <section className="contact-section">
             <div className="auto-container">
               <div className="contact-title">
-                <h2>Employees</h2 >
+                <h2>{apiErrorMessage}</h2>
               </div >
-              < Table striped bordered hover >
-                <thead>
-                  <tr>
-                    <th>Active</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Added Date</th>
-                    <th>Role</th>
-                    <th>Edit/Delete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {employees.map((employee) => (
-                    <tr key={employee.employee_id}>
-                      <td>{employee.active_employee ? "Yes" : "No"}</td>
-                      <td>{employee.employee_first_name}</td>
-                      <td>{employee.employee_last_name}</td>
-                      <td>{employee.employee_email}</td>
-                      <td>{employee.employee_phone}</td>
-                      <td>{format(new Date(employee.added_date), 'MM - dd - yyyy | kk:mm')}</td>
-                      <td>{employee.company_role_name}</td>
-                      <td>
-                      
-                                    <a href={`/admin/employee/edit/${employee.employee_id}`} className="pr-3">
-                                         <FaRegEdit className="text-dark cursor-pointer mr-2" size={18} />
-                                   
-                                    </a>
-                  
-                                    <a  >
-                                      <a onClick={()=>handleDelete(employee.employee_id)} >
-                                     <FaTrashAlt className="text-danger cursor-pointer " size={18} />
-                                      </a>
-                                    </a>
-                      </td>
+            </div>
+          </section>
+        ) : (
+          <>
+     
+            <section className="contact-section">
+              <div className="auto-container">
+                <div className="contact-title">
+                  <h2>Employees</h2 >
+                </div >
+                < Table striped bordered hover >
+                  <thead>
+                    <tr>
+                      <th>Active</th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Added Date</th>
+                      <th>Role</th>
+                      <th>Edit/Delete</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table >
-            </div >
-          </section >
-        </>
-      )}
+                  </thead>
+                  <tbody>
+                    {employees.map((employee) => (
+                      <tr key={employee.employee_id}>
+                        <td>{employee.active_employee ? "Yes" : "No"}</td>
+                        <td>{employee.employee_first_name}</td>
+                        <td>{employee.employee_last_name}</td>
+                        <td>{employee.employee_email}</td>
+                        <td>{employee.employee_phone}</td>
+                        <td>{format(new Date(employee.added_date), 'MM - dd - yyyy | kk:mm')}</td>
+                        <td>{employee.company_role_name}</td>
+                        <td>
+                        
+                                      <a href={`/admin/employee/edit/${employee.employee_id}`} className="pr-3">
+                                           <FaRegEdit className="text-dark cursor-pointer mr-2" size={18} />
+                                     
+                                      </a>
+                    
+                                      <a  >
+                                        <a onClick={()=>handleDelete(employee.employee_id)} >
+                                       <FaTrashAlt className="text-danger cursor-pointer " size={18} />
+                                        </a>
+                                      </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table >
+              </div >
+            </section >
+          </>
+        )
+      )
+      
+      }
     </>
   );
 }

@@ -6,35 +6,67 @@ import { FaEdit } from "react-icons/fa";
 import { MdAdsClick } from "react-icons/md";
 import { format } from "date-fns";
 import { ExternalLink } from "lucide-react";
+import Loader from "../../Loader/Loader";
+
 
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-    const [serverError, setServerError] = useState('');
+  const [serverError, setServerError] = useState('');
+  const [isLoading,setIsLoading] = useState(false)
+
+    // A state to serve as a flag to show the error message 
+    const [apiError, setApiError] = useState(false);
+    // A state to store the error message 
+    const [apiErrorMessage, setApiErrorMessage] = useState(null);
     // Create a variable to hold the user's token
-    let loggedInEmployeeToken = '';
-    // Destructure the auth hook and get the token 
-    const { employee } = useAuth();
-    if (employee && employee.employee_token) {
-      loggedInEmployeeToken = employee.employee_token;
-    }
+
+
+  const { employee } = useAuth();
+  let token = null; // To store the token 
+
   useEffect(() => {
-    const customerslist = createCustomer.getAllCustomer(loggedInEmployeeToken).then((response) => response.json()).then((data) => {
-        // console.log("here -> ",data);
-        // If Error is returned from the API server, set the error message
-        if (!data) {
-          setServerError(data.error)
+    setIsLoading(true)
+    if (employee) {
+      token = employee.employee_token;
+    }
+    else{
+      
+      return
+    }
+    console.log(token)
+    const customerslist = createCustomer.getAllCustomer(token)
+    customerslist.then((res) => {
+      if (!res.ok) {
+        console.log(res.status);
+        setApiError(false);
+        setIsLoading(false)
+        if (res.status === 401) {
+          setIsLoading(false)
+          setApiErrorMessage("Please login again");
+        } else if (res.status === 403) {
+          setApiErrorMessage("You are not authorized to view this page");
+          setIsLoading(false)
         } else {
-          // Handle successful response
-          setCustomers(data?.customers);
-          setTotalPages(data?.totalPages);
+          setApiErrorMessage("Please try again later");
+          setIsLoading(false)
         }
-      }).catch((err) => {
-        console.log(err);
       }
-    );
-    }, [currentPage, loggedInEmployeeToken]);
+      // console.log("res",res)
+      return res.json()
+    }).then((data) => {
+      console.log(data)
+      if (data.customers.length !== 0) {
+        setCustomers(data.customers)
+        setIsLoading(false)
+      }
+
+    }).catch((err) => {
+      console.log(err);
+      setIsLoading(false)
+    })
+    }, [employee]);
 
   
 //     const handleSearch = (event) => {
@@ -48,9 +80,23 @@ const CustomerList = () => {
 //     setCustomers(filteredCustomers);
 //   };
 
-// console.log("customers -> ", customers);
 
   return (
+    <>
+      
+    {
+      isLoading ? (<Loader />):(
+
+        apiError ? (
+          <section className="contact-section">
+            <div className="auto-container">
+              <div className="contact-title">
+                <h2>{apiErrorMessage}</h2>
+              </div >
+            </div>
+          </section>
+        ) : (
+
     <section className="contact-section">
     <div className="auto-container">
       <div className="contact-title">
@@ -128,6 +174,10 @@ const CustomerList = () => {
     </div>
     </div>
     </section>
+        )
+      )
+    }
+    </>
   );
 };
 
